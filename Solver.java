@@ -11,11 +11,12 @@ public class Solver {
     private static int TLIMITACCESS;
     private static int TLIMITERASE;
     private static int TLIMITSTORAGE;
-    // personal data
-    // users
+    // personal data à récupérer avec le parser depuis graphe de provenance
+    // users à récupérer avec le parser depuis graphe de provenance
 
     public static void setProvenanceGraphPath(String PROVENANCE_GRAPH_PATH){
         Solver.PROVENANCE_GRAPH_PATH = PROVENANCE_GRAPH_PATH;
+        // initialiser personal data, users
     }
 
     public static void setQueries(String[] QUERIES){
