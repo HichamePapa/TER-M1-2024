@@ -19,6 +19,7 @@ public class Solver {
     private Parser parser;
     private List<String> personalData; // List of every personal data found in the provenance graph
     private List<String> users; // List of every user found in the provenance graph
+    private List<String> process;
     // personal data à récupérer avec le parser depuis graphe de provenance
     // users à récupérer avec le parser depuis graphe de provenance
 
@@ -46,6 +47,7 @@ public class Solver {
         this.parser = new Parser(new File(provenanceGraphPath));
         this.personalData = parser.parserData();
         this.users = parser.parserUser();
+        this.process = parser.parserProcess();
     }
 
     public void setQueries(String[] queries){
@@ -120,33 +122,80 @@ public class Solver {
         return predicates;
     }
 
-
-
-
-    /**
-     *
-     */
-    public void solve(){
-        Query causalDependenciesPred = new Query(
-                "consult",
-                new Term[] {new Atom("RGPD/causal_dependencies.pl")}
-        );
-        System.out.println( "opening causal dependencies definition file : " + (causalDependenciesPred.hasSolution() ? "success" : "fail"));
-
-        // TODO à compléter quand j'aurais l'implémentation de ce que renvoie le traducteur
-
-        for (String s : buildTimePredicates()){
+    private void loadTimePredicates(){
+        List <String> timePredicates = buildTimePredicates();
+        for (String s : timePredicates){
             Term pred = Term.textToTerm("assertz(" + s + ")");
             Query q = new Query(pred);
             q.hasSolution();
         }
-        Query provenanceGraphPred = new Query(
+    }
+
+    public void loadPrologFile(String path) throws IOException{
+        Query pred = new Query(
                 "consult",
-                new Term[] {new Atom(provenanceGraphPath)}
+                new Term[] {new Atom(path)}
         );
-        System.out.println( "opening provenance graph file : " + (provenanceGraphPred.hasSolution() ? "success" : "fail"));
+        if (!pred.hasSolution()){
+            throw new IOException("error opening " + path);
+        }
+    }
+
+
+    public void solve() throws IOException {
+        loadPrologFile("RGPD/causal_dependencies.pl");
+        loadTimePredicates();
+        loadPrologFile(provenanceGraphPath);
 
         for (String s : queries){
+            // TODO à compléter quand j'aurais l'implémentation de ce que renvoie le traducteur
+            // en gros c genre si on a tel requête on ouvre le fichier correspondant
+            // + vérifier avant si on a pas un cas particulier (pas de wasGeneratedBy, pas de used etc.) pour écrire dans la sortie et traiter la requête en conséquence
+            if (s.startsWith("legal")){
+                if (process.isEmpty()){
+                    System.out.println("WARNING - could not check " + s + " as there is no use of any personal data (no process in provenance graph)");
+                    continue;
+                }
+                else if (users.isEmpty()){
+                    System.out.println("WARNING - could not check " + s + " as there is no use of any personal data (no users in provenance graph)");
+                    continue;
+                }
+                else if (personalData.isEmpty()){
+                    System.out.println("WARNING - could not check " + s + " as there is no use of any personal data (no personal data in provenance graph)");
+                    continue;
+                }
+                else{
+                    loadPrologFile("RGPD/legal.pl");
+                }
+            } else if (s.startsWith("rightAccess")){
+                if (users.isEmpty()){
+                    System.out.println("WARNING - could not check " + s + " as there is no access request (no user in provenance graph)");
+                    continue;
+                }
+                else{
+                    loadPrologFile("RGPD/right_access.pl");
+                }
+            } else if (s.startsWith("eraseCompliant")) {
+                if (process.isEmpty()){
+                    System.out.println("WARNING - could not check " + s + " as there is no erase request (no process in provenance graph)");
+                    continue;
+                }
+                else{
+                    loadPrologFile("RGPD/erase_compliant.pl");
+                }
+            } else if (s.startsWith("storageLimitation")) {
+                if (process.isEmpty()){
+                    if (personalData.isEmpty()){
+                        System.out.println("WARNING - could not check " + s + " as there is no personal data in provenance graph");
+                        continue;
+                    } else {
+                        loadPrologFile("RGPD/storage_limitation_no_use.pl");
+                    }
+                } else {
+                    loadPrologFile("RGPD/storage_limitation.pl");
+                }
+            }
+
             Query q = new Query(s);
             q.allSolutions();
         }
