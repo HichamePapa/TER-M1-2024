@@ -9,7 +9,7 @@ isPersonal(D):- personal(_S,Q), nth0(_X,Q,D).
 
 %	lawfulness
 writeConsentNotFound(P,D,PU,T):- write('consent not compliant : process '), write(P), write(' used '), write(D), write(' for purpose '), write(PU), write(' at time '), write(T), writeln(' without consent'), false.
-writeNoDataUsed():- writeln('LAWFULNESS OK - lawful system as there is no use of any data').
+writeNoDataUsed():- writeln('LAWFULNESS OK - lawful system as there is no use of any personal data').
 
 consentFoundOk(D,PU,T):-
 	(consent(C,D,PU,TG),TG<T,
