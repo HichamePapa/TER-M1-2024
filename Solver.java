@@ -1,3 +1,4 @@
+import Traducteur.Parser;
 import org.jpl7.Atom;
 import org.jpl7.Query;
 import org.jpl7.Term;
