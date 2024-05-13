@@ -16,12 +16,12 @@ public class Solver {
     private int tLimitAccess;
     private int tLimitErase;
     private int tLimitStorage;
-    private Parser parser;
-    private List<String> personalData; // List of every personal data found in the provenance graph
-    private List<String> users; // List of every user found in the provenance graph
+    private List<String> personalData; // List of every personal data found in the provenance graph. Given by Parser
+    private List<String> users; // List of every user found in the provenance graph. Given by Parser
     private List<String> process;
-    // personal data à récupérer avec le parser depuis graphe de provenance
-    // users à récupérer avec le parser depuis graphe de provenance
+
+    private final List<String> filesLoad = new ArrayList<>();
+    private final List<String> predicatesLoad = new ArrayList<>();
 
     /**
      * Initialises the Solver by setting required variables.
@@ -42,9 +42,14 @@ public class Solver {
         this.tLimitStorage = tLimitStorage;
     }
 
+    /**
+     * Update the current provenance graph path. The method also retrieves personal data, users and process of the system
+     * @param provenanceGraphPath Path to the Prolog file representing the provenance graph
+     * @throws IOException If an error occurs when opening the file
+     */
     public void setProvenanceGraphPath(String provenanceGraphPath) throws IOException {
         this.provenanceGraphPath = provenanceGraphPath;
-        this.parser = new Parser(new File(provenanceGraphPath));
+        Parser parser = new Parser(new File(provenanceGraphPath));
         this.personalData = parser.parserData();
         this.users = parser.parserUser();
         this.process = parser.parserProcess();
@@ -73,8 +78,109 @@ public class Solver {
         this.tLimitStorage = tLimitStorage;
     }
 
+    // ------------------------------ PROLOG UTILS ------------------------------ //
+
     /**
-     * Builds predicates required to sort personal data. Those associate each user with a list of their personal data, based on the way data is named.
+     * Loads a list of predicates to the Prolog solver
+     * @param predicates String List containing the predicates to load
+     */
+    private void loadPredicatesFromList(List<String> predicates){
+        for (String s : predicates){
+            Term pred = Term.textToTerm("assertz(" + s + ")");
+            Query q = new Query(pred);
+            q.hasSolution();
+        }
+    }
+
+    /**
+     * Cancels a predicate previously load in Prolog solver
+     * @param predicate Predicate to abolish
+     */
+    private void abolishPredicate(String predicate){
+        Term pred = Term.textToTerm("abolish(" + predicate + ")");
+        Query q = new Query(pred);
+        q.hasSolution();
+    }
+
+    /**
+     * Unloads all previously load predicates from the Prolog solver. It prevents errors for next solver calls.
+     */
+    private void unloadAllPredicates(){
+        for (String s : predicatesLoad){
+            abolishPredicate(s);
+        }
+    }
+
+
+
+    /**
+     * Loads content from a file into the Prolog solver
+     * @param path Path to the file to load
+     * @throws IOException If an error occurs when opening the file
+     */
+    private void loadPrologFile(String path) throws IOException{
+        Query pred = new Query(
+                "consult",
+                new Term[] {new Atom(path)}
+        );
+        if (!pred.hasSolution()){
+            throw new IOException("error opening " + path);
+        }
+        else{
+            filesLoad.add(path);
+        }
+    }
+
+    /**
+     * Unloads content from a file from the Prolog solver
+     * @param path Path to the file to unload
+     * @throws RuntimeException If an error occurs when closing the file
+     */
+    private void unloadPrologFile(String path) throws RuntimeException {
+        Query pred = new Query(
+                "unload_file",
+                new Term[] {new Atom(path)}
+        );
+        if (!pred.hasSolution()){
+            throw new RuntimeException("error closing " + path);
+        }
+    }
+
+    /**
+     * Unloads all previously load files from the Prolog solver. It prevents errors for next solver calls.
+     * @throws RuntimeException If an error occurs when closing a file
+     */
+    private void unloadAllFiles() throws RuntimeException {
+        for (String s : filesLoad){
+            unloadPrologFile(s);
+        }
+    }
+
+    /**
+     * Prepares the solver for the next verification.
+     */
+    private void resetSolver(){
+        unloadAllPredicates();
+        unloadAllFiles();
+    }
+
+    // ------------------------------ RGPD UTILS ------------------------------ //
+
+    /**
+     * Builds a list containing time predicates required to check current time and time limits.
+     * @return List of predicates associating time variables with their values
+     */
+    private List<String> buildTimePredicates(){
+        List<String> predicates = new ArrayList<>();
+        predicates.add("tCurrent(" + tCurrent + ")");
+        predicates.add("tLimit('access',"+ tLimitAccess +")");
+        predicates.add("tLimit('erase',"+ tLimitErase +")");
+        predicates.add("tLimit('storage',"+ tLimitStorage +")");
+        return predicates;
+    }
+
+    /**
+     * Builds a list containing predicates required to sort personal data. Those associate each user with a list of their personal data, based on the way data is named.
      * @return Predicates associating each user with their data
      */
     private List<String> buildPersonalDataPredicates(){
@@ -90,7 +196,6 @@ public class Solver {
                 usersData.get(potentialUserName).add(data);
             }
         }
-        System.out.println(usersData);
         StringBuilder sb;
         for (String user : users){
             sb = new StringBuilder();
@@ -103,48 +208,40 @@ public class Solver {
             if (!usersData.get(user.toLowerCase()).isEmpty()){
                 sb.deleteCharAt(sb.length()-1);
             }
-            sb.append("]).\n");
+            sb.append("])");
             predicates.add(sb.toString());
         }
         return predicates;
     }
 
     /**
-     * Builds time predicates required to check current time and time limits.
-     * @return List of predicates associating time variables with their values
+     * Loads all time predicates to the Prolog solver
      */
-    private List<String> buildTimePredicates(){
-        List<String> predicates = new ArrayList<>();
-        predicates.add("tCurrent(" + tCurrent + ")");
-        predicates.add("tLimit('access',"+ tLimitAccess +")");
-        predicates.add("tLimit('erase',"+ tLimitErase +")");
-        predicates.add("tLimit('storage',"+ tLimitStorage +")");
-        return predicates;
-    }
-
     private void loadTimePredicates(){
-        List <String> timePredicates = buildTimePredicates();
-        for (String s : timePredicates){
-            Term pred = Term.textToTerm("assertz(" + s + ")");
-            Query q = new Query(pred);
-            q.hasSolution();
+        loadPredicatesFromList(buildTimePredicates());
+        predicatesLoad.add("tCurrent/1");
+        predicatesLoad.add("tLimit/2");
+    }
+
+    /**
+     * Loads all personal data predicates to the Prolog solver, based on the provenance graph
+     */
+    private void loadPersonalDataPredicates(){
+        if (!personalData.isEmpty()) {
+            loadPredicatesFromList(buildPersonalDataPredicates());
+            predicatesLoad.add("personal/2");
         }
     }
 
-    public void loadPrologFile(String path) throws IOException{
-        Query pred = new Query(
-                "consult",
-                new Term[] {new Atom(path)}
-        );
-        if (!pred.hasSolution()){
-            throw new IOException("error opening " + path);
-        }
-    }
+    // ------------------------------ SOLVER ------------------------------ //
 
-
+    /**
+     * Verifies given queries and outputs observations in console.
+     */
     public void solve() throws IOException {
         loadPrologFile("RGPD/causal_dependencies.pl");
         loadTimePredicates();
+        loadPersonalDataPredicates();
         loadPrologFile(provenanceGraphPath);
 
         for (String s : queries){
@@ -199,6 +296,7 @@ public class Solver {
             Query q = new Query(s);
             q.allSolutions();
         }
+        resetSolver();
     }
 
     public static void main(String[] args){
