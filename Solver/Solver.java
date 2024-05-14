@@ -1,3 +1,5 @@
+package Solver;
+
 import Traducteur.Parser;
 import org.jpl7.Atom;
 import org.jpl7.Query;
@@ -5,14 +7,11 @@ import org.jpl7.Term;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Solver {
     private String provenanceGraphPath;
-    private String[] queries;
+    private List<String> queries;
     private int tCurrent;
     private int tLimitAccess;
     private int tLimitErase;
@@ -25,7 +24,7 @@ public class Solver {
     private final List<String> predicatesLoad = new ArrayList<>();
 
     /**
-     * Initialises the Solver by setting required variables.
+     * Initialises the Solver.Solver by setting required variables.
      * @param provenanceGraphPath Path to the Prolog file representing the provenance graph
      * @param queries List of queries to submit
      * @param tCurrent Current time value (at which the verification occurs)
@@ -34,7 +33,7 @@ public class Solver {
      * @param tLimitStorage Maximum time authorized for the system to store a data after its last use
      * @throws IOException If provenance graph could not be opened
      */
-    public Solver(String provenanceGraphPath, String[] queries, int tCurrent, int tLimitAccess, int tLimitErase, int tLimitStorage) throws IOException {
+    public Solver(String provenanceGraphPath, List<String> queries, int tCurrent, int tLimitAccess, int tLimitErase, int tLimitStorage) throws IOException {
         setProvenanceGraphPath(provenanceGraphPath);
         this.queries = queries;
         this.tCurrent = tCurrent;
@@ -56,7 +55,7 @@ public class Solver {
         this.process = parser.parserProcess();
     }
 
-    public void setQueries(String[] queries){
+    public void setQueries(List<String> queries){
         this.queries = queries;
     }
 
@@ -109,6 +108,7 @@ public class Solver {
     private void unloadAllPredicates(){
         for (String s : predicatesLoad){
             abolishPredicate(s);
+            predicatesLoad.remove(s);
         }
     }
 
@@ -154,6 +154,7 @@ public class Solver {
     private void unloadAllFiles() throws RuntimeException {
         for (String s : filesLoad){
             unloadPrologFile(s);
+            filesLoad.remove(s);
         }
     }
 
@@ -297,15 +298,22 @@ public class Solver {
             Query q = new Query(s);
             q.allSolutions();
         }
+
+
         resetSolver();
     }
 
-    public static void main(String[] args){
-        /*List<String> data = List.of("wall_bob", "friend_list_bob", "phone_bob", "id_bob", "email_bob");
-        List<String> users = List.of("Bob", "DC");
-        Solver s = new Solver();
-        for (String p : buildPersonalDataPredicates(data, users)){
-            System.out.print(p);
-        }*/
+    public static void main(String[] args) throws IOException {
+        List<String> queries = List.of("legal(P,D,C,TG,T)","eraseCompliant(D)","storageLimitation(D)","rightAccess(S)");
+
+        System.out.println("cas du graphe fourni dans le sujet :");
+        Solver s1 = new Solver("testfiles/SN_prov_graph.pl",queries, 61983,43200,57600,2628000);
+        s1.solve();
+
+
+
+        System.out.println("\ncas d'un graphe modifié avec plus de problèmes :");
+        Solver s2 = new Solver("testfiles/SN_prov_graph_pb.pl",queries, 61983,43200,57600,30000);
+        s2.solve();
     }
 }
