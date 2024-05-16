@@ -23,7 +23,7 @@ public class Solver {
     final Set<String> predicatesLoad = new HashSet<>();
 
     /**
-     * Initialises the Solver.Solver by setting required variables.
+     * Initialises the Solver by setting required variables.
      * @param provenanceGraphPath Path to the Prolog file representing the provenance graph
      * @param queries List of queries to submit
      * @param tCurrent Current time value (at which the verification occurs)
@@ -59,7 +59,6 @@ public class Solver {
     }
 
     // addQueries
-
 
     public void setCurrentTime(int tCurrent) {
         this.tCurrent = tCurrent;
