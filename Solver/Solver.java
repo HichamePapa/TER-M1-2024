@@ -83,14 +83,6 @@ public class Solver {
      * Loads a list of terms to the Prolog solver
      * @param terms String List containing the terms to load
      */
-    /*void loadTermsFromList(List<String> terms){
-        for (String s : terms){
-            Term term = Term.textToTerm("assertz(" + s + ")");
-            Query q = new Query(term);
-            q.hasSolution();
-        }
-    }*/
-
     void loadTermsFromList(List<Term> terms){
         for (Term t : terms){
             Term assertTerm = Term.textToTerm("assertz(" + t.toString() + ")");
@@ -99,17 +91,6 @@ public class Solver {
             predicatesLoad.add(t.name() + "/" + t.arity());
         }
     }
-
-    /**
-     * Cancels a predicate previously load in Prolog solver
-     * @param predicate Predicate to abolish
-     */
-    /*void unloadPredicate(String predicate){
-        Term pred = Term.textToTerm("abolish(" + predicate + ")");
-        Query q = new Query(pred);
-        q.hasSolution();
-        predicatesLoad.remove(predicate);
-    }*/
 
     /**
      * Unloads all previously load predicates from the Prolog solver. It prevents errors for next solver calls.
@@ -122,8 +103,6 @@ public class Solver {
         }
         predicatesLoad.clear();
     }
-
-
 
     /**
      * Loads content from a file into the Prolog solver
@@ -142,22 +121,6 @@ public class Solver {
             filesLoad.add(path);
         }
     }
-
-    /**
-     * Unloads content from a file from the Prolog solver
-     * @param path Path to the file to unload
-     * @throws RuntimeException If an error occurs when closing the file
-     */
-    /*private void unloadPrologFile(String path) throws RuntimeException {
-        Query pred = new Query(
-                "unload_file",
-                new Term[] {new Atom(path)}
-        );
-        if (!pred.hasSolution()){
-            throw new RuntimeException("error closing " + path);
-        }
-        filesLoad.remove(path);
-    }*/
 
     /**
      * Unloads all previously load files from the Prolog solver. It prevents errors for next solver calls.
@@ -190,15 +153,6 @@ public class Solver {
      * Builds a list containing Prolog facts required to check current time and time limits.
      * @return List of terms associating time variables with their values
      */
-    /*private List<String> buildTimeTerms(){
-        List<String> terms = new ArrayList<>();
-        terms.add("tCurrent(" + tCurrent + ")");
-        terms.add("tLimit('access',"+ tLimitAccess +")");
-        terms.add("tLimit('erase',"+ tLimitErase +")");
-        terms.add("tLimit('storage',"+ tLimitStorage +")");
-        return terms;
-    }*/
-
     private List<Term> buildTimeTerms(){
         List<Term> terms = new ArrayList<>();
         terms.add(new Compound("tCurrent", new Term[]{new Integer(tCurrent)}));
@@ -212,38 +166,7 @@ public class Solver {
      * Builds a list containing terms required to sort personal data. Those associate each user with a list of their personal data, based on the way data is named.
      * @return Terms associating each user with their data
      */
-    /*private List<String> buildPersonalDataTerms(){
-        Map<String, List<String>> usersData = new HashMap<>();
-        List<String> terms = new ArrayList<>();
-        for (String user : users){
-            usersData.put(user.toLowerCase(), new ArrayList<>());
-        }
-
-        for (String data : personalData){
-            String potentialUserName = data.substring(data.lastIndexOf("_") + 1).toLowerCase();
-            if (usersData.containsKey(potentialUserName)){
-                usersData.get(potentialUserName).add(data);
-            }
-        }
-        StringBuilder sb;
-        for (String user : users){
-            sb = new StringBuilder();
-            sb.append("personal('");
-            sb.append(user);
-            sb.append("',[");
-            for (String data : usersData.get(user.toLowerCase())){
-                sb.append("'").append(data).append("',");
-            }
-            if (!usersData.get(user.toLowerCase()).isEmpty()){
-                sb.deleteCharAt(sb.length()-1);
-            }
-            sb.append("])");
-            terms.add(sb.toString());
-        }
-        return terms;
-    }*/
-
-    private List<Term> buildPersonalDataTerms(){
+    /*private List<Term> buildPersonalDataTerms(){
         Map<String, List<String>> usersData = new HashMap<>();
         List<Term> terms = new ArrayList<>();
         for (String user : users){
@@ -263,28 +186,24 @@ public class Solver {
             });
             terms.add(t);
         }
-        System.out.println(terms.toString());
         return terms;
-    }
+    }*/
 
     /**
      * Loads all time terms to the Prolog solver
      */
     private void loadTimeTerms(){
         loadTermsFromList(buildTimeTerms());
-        /*predicatesLoad.add("tCurrent/1");
-        predicatesLoad.add("tLimit/2");*/
     }
 
     /**
      * Loads all personal data terms to the Prolog solver, based on the provenance graph
      */
-    private void loadPersonalDataTerms(){
+    /*private void loadPersonalDataTerms(){
         if (!personalData.isEmpty()) {
             loadTermsFromList(buildPersonalDataTerms());
-//            predicatesLoad.add("personal/2");
         }
-    }
+    }*/
 
     // ------------------------------ SOLVER ------------------------------ //
 
@@ -294,13 +213,9 @@ public class Solver {
     public void solve() throws IOException {
         loadPrologFile("RGPD/causal_dependencies.pl");
         loadTimeTerms();
-        // loadPersonalDataTerms();
         loadPrologFile(provenanceGraphPath);
 
         for (String s : queries){
-            // TODO à compléter quand j'aurais l'implémentation de ce que renvoie le traducteur
-            // en gros c genre si on a tel requête on ouvre le fichier correspondant
-            // + vérifier avant si on a pas un cas particulier (pas de wasGeneratedBy, pas de used etc.) pour écrire dans la sortie et traiter la requête en conséquence
             if (s.startsWith("legal")){
                 if (process.isEmpty()){
                     System.out.println("WARNING - could not check " + s + " as there is no use of any personal data (no process in provenance graph)");
@@ -356,7 +271,7 @@ public class Solver {
     public static void main(String[] args) throws IOException {
         List<String> queries = List.of("legal(P,D,C,TG,T)","eraseCompliant(D)","storageLimitation(D)","rightAccess(S)");
 
-        /*System.out.println("cas du graphe fourni dans le sujet :");
+        System.out.println("cas du graphe fourni dans le sujet :");
         Solver s1 = new Solver("Solver/testfiles/SN_prov_graph.pl",queries, 61983,43200,57600,2628000);
         s1.solve();
 
@@ -364,9 +279,6 @@ public class Solver {
 
         System.out.println("\ncas d'un graphe modifié avec plus de problèmes :");
         Solver s2 = new Solver("Solver/testfiles/SN_prov_graph_pb.pl",queries, 61983,43200,57600,30000);
-        s2.solve();*/
-
-        Solver s = new Solver("temp/webstore_graph_Alice.pl", queries, 115000, 43200,57600,2628000);
-        s.solve();
+        s2.solve();
     }
 }
