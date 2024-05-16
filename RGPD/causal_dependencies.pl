@@ -18,5 +18,6 @@ notAvailable(D1,TU) :- used(P,D1,_R,TU) , action(P,'delete'). %meaning the actio
 
 %	Personal data verification
 isPersonal(D):- wasGeneratedBy(D,_P,'personal data',_T).
-isPersonalP(D):- isPersonal(D).
-isPersonalP(D):- isPersonal(D1), wasDerivedFromP(D,D1).
+isPersonalP(D):-
+    (isPersonal(D), !);
+    (isPersonal(D1), wasDerivedFromP(D,D1), !).
