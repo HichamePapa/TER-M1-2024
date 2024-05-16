@@ -5,10 +5,6 @@ consent(C,D,PU,T):- wasControlledBy(P1,_S,'owner',_TB,_TE), wasGeneratedBy(C,P1,
 revoke(C,T):- used(_P,C,'revokeConsent',T).
 nextConsent(C,C1,T):- wasControlledBy(P1,_S,'owner',_TB,_TE), used(P1,C,'updateConsent',_TU), wasGeneratedBy(C1,P1,'consent',T).
 lastConsent(C):- consent(C,_D,_P1,_T),\+ (nextConsent(C,_C1,_TU)).
-%% isPersonal(D):- personal(_S,Q), nth0(_X,Q,D).
-isPersonal(D):- wasGeneratedBy(D,_P,'personal data',_T).
-isPersonalP(D):- isPersonal(D).
-isPersonalP(D):- isPersonal(D1), wasDerivedFromP(D,D1).
 
 %	lawfulness
 writeConsentNotFound(P,D,PU,T):- write('consent not compliant : process '), write(P), write(' used '), write(D), write(' for purpose '), write(PU), write(' at time '), write(T), writeln(' without consent'), false.

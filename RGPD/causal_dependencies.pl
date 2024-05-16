@@ -15,3 +15,8 @@ wasDerivedFromP(_D1,D2) :- wasDerivedFrom(D2,D,_R,_TG) , wasDerivedFromP(D,D2).
 owns(S1,D1) :- wasGeneratedBy(D1,P,_R,_TG) , wasControlledBy(P,S1,'owner',_TB,_TE).
 contributedTo(S1,D1,R) :- wasGeneratedByP(D1,P) , wasControlledBy(P,S1,R,_TB,_TE).
 notAvailable(D1,TU) :- used(P,D1,_R,TU) , action(P,'delete'). %meaning the action of P is 'delete'
+
+%	Personal data verification
+isPersonal(D):- wasGeneratedBy(D,_P,'personal data',_T).
+isPersonalP(D):- isPersonal(D).
+isPersonalP(D):- isPersonal(D1), wasDerivedFromP(D,D1).
