@@ -1,9 +1,8 @@
 package Solver;
 
 import Traducteur.Parser;
-import org.jpl7.Atom;
-import org.jpl7.Query;
-import org.jpl7.Term;
+import org.jpl7.*;
+import org.jpl7.Integer;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,10 +17,10 @@ public class Solver {
     private int tLimitStorage;
     private List<String> personalData; // List of every personal data found in the provenance graph. Given by Parser
     private List<String> users; // List of every user found in the provenance graph. Given by Parser
-    private List<String> process;
+    private List<String> process; // List of every process found in the provenance graph. Given by Parser
 
-    private final List<String> filesLoad = new ArrayList<>();
-    private final List<String> predicatesLoad = new ArrayList<>();
+    final Set<String> filesLoad = new HashSet<>();
+    final Set<String> predicatesLoad = new HashSet<>();
 
     /**
      * Initialises the Solver.Solver by setting required variables.
@@ -81,14 +80,23 @@ public class Solver {
     // ------------------------------ PROLOG UTILS ------------------------------ //
 
     /**
-     * Loads a list of predicates to the Prolog solver
-     * @param predicates String List containing the predicates to load
+     * Loads a list of terms to the Prolog solver
+     * @param terms String List containing the terms to load
      */
-    private void loadPredicatesFromList(List<String> predicates){
-        for (String s : predicates){
-            Term pred = Term.textToTerm("assertz(" + s + ")");
-            Query q = new Query(pred);
+    /*void loadTermsFromList(List<String> terms){
+        for (String s : terms){
+            Term term = Term.textToTerm("assertz(" + s + ")");
+            Query q = new Query(term);
             q.hasSolution();
+        }
+    }*/
+
+    void loadTermsFromList(List<Term> terms){
+        for (Term t : terms){
+            Term assertTerm = Term.textToTerm("assertz(" + t.toString() + ")");
+            Query q = new Query(assertTerm);
+            q.hasSolution();
+            predicatesLoad.add(t.name() + "/" + t.arity());
         }
     }
 
@@ -96,20 +104,23 @@ public class Solver {
      * Cancels a predicate previously load in Prolog solver
      * @param predicate Predicate to abolish
      */
-    private void abolishPredicate(String predicate){
+    /*void unloadPredicate(String predicate){
         Term pred = Term.textToTerm("abolish(" + predicate + ")");
         Query q = new Query(pred);
         q.hasSolution();
-    }
+        predicatesLoad.remove(predicate);
+    }*/
 
     /**
      * Unloads all previously load predicates from the Prolog solver. It prevents errors for next solver calls.
      */
     private void unloadAllPredicates(){
-        for (String s : predicatesLoad){
-            abolishPredicate(s);
-            predicatesLoad.remove(s);
+        for (String predicate : predicatesLoad){
+            Term pred = Term.textToTerm("abolish(" + predicate + ")");
+            Query q = new Query(pred);
+            q.hasSolution();
         }
+        predicatesLoad.clear();
     }
 
 
@@ -137,7 +148,7 @@ public class Solver {
      * @param path Path to the file to unload
      * @throws RuntimeException If an error occurs when closing the file
      */
-    private void unloadPrologFile(String path) throws RuntimeException {
+    /*private void unloadPrologFile(String path) throws RuntimeException {
         Query pred = new Query(
                 "unload_file",
                 new Term[] {new Atom(path)}
@@ -145,23 +156,30 @@ public class Solver {
         if (!pred.hasSolution()){
             throw new RuntimeException("error closing " + path);
         }
-    }
+        filesLoad.remove(path);
+    }*/
 
     /**
      * Unloads all previously load files from the Prolog solver. It prevents errors for next solver calls.
      * @throws RuntimeException If an error occurs when closing a file
      */
     private void unloadAllFiles() throws RuntimeException {
-        for (String s : filesLoad){
-            unloadPrologFile(s);
-            filesLoad.remove(s);
+        for (String path : filesLoad){
+            Query pred = new Query(
+                    "unload_file",
+                    new Term[] {new Atom(path)}
+            );
+            if (!pred.hasSolution()){
+                throw new RuntimeException("error closing " + path);
+            }
         }
+        filesLoad.clear();
     }
 
     /**
      * Prepares the solver for the next verification.
      */
-    private void resetSolver(){
+    void resetSolver(){
         unloadAllPredicates();
         unloadAllFiles();
     }
@@ -169,25 +187,34 @@ public class Solver {
     // ------------------------------ RGPD UTILS ------------------------------ //
 
     /**
-     * Builds a list containing time predicates required to check current time and time limits.
-     * @return List of predicates associating time variables with their values
+     * Builds a list containing Prolog facts required to check current time and time limits.
+     * @return List of terms associating time variables with their values
      */
-    private List<String> buildTimePredicates(){
-        List<String> predicates = new ArrayList<>();
-        predicates.add("tCurrent(" + tCurrent + ")");
-        predicates.add("tLimit('access',"+ tLimitAccess +")");
-        predicates.add("tLimit('erase',"+ tLimitErase +")");
-        predicates.add("tLimit('storage',"+ tLimitStorage +")");
-        return predicates;
+    /*private List<String> buildTimeTerms(){
+        List<String> terms = new ArrayList<>();
+        terms.add("tCurrent(" + tCurrent + ")");
+        terms.add("tLimit('access',"+ tLimitAccess +")");
+        terms.add("tLimit('erase',"+ tLimitErase +")");
+        terms.add("tLimit('storage',"+ tLimitStorage +")");
+        return terms;
+    }*/
+
+    private List<Term> buildTimeTerms(){
+        List<Term> terms = new ArrayList<>();
+        terms.add(new Compound("tCurrent", new Term[]{new Integer(tCurrent)}));
+        terms.add(new Compound("tLimit", new Term[]{new Atom("access"), new Integer(tLimitAccess)}));
+        terms.add(new Compound("tLimit", new Term[]{new Atom("erase"), new Integer(tLimitErase)}));
+        terms.add(new Compound("tLimit", new Term[]{new Atom("storage"), new Integer(tLimitStorage)}));
+        return terms;
     }
 
     /**
-     * Builds a list containing predicates required to sort personal data. Those associate each user with a list of their personal data, based on the way data is named.
-     * @return Predicates associating each user with their data
+     * Builds a list containing terms required to sort personal data. Those associate each user with a list of their personal data, based on the way data is named.
+     * @return Terms associating each user with their data
      */
-    private List<String> buildPersonalDataPredicates(){
+    /*private List<String> buildPersonalDataTerms(){
         Map<String, List<String>> usersData = new HashMap<>();
-        List<String> predicates = new ArrayList<>();
+        List<String> terms = new ArrayList<>();
         for (String user : users){
             usersData.put(user.toLowerCase(), new ArrayList<>());
         }
@@ -211,27 +238,51 @@ public class Solver {
                 sb.deleteCharAt(sb.length()-1);
             }
             sb.append("])");
-            predicates.add(sb.toString());
+            terms.add(sb.toString());
         }
-        return predicates;
+        return terms;
+    }*/
+
+    private List<Term> buildPersonalDataTerms(){
+        Map<String, List<String>> usersData = new HashMap<>();
+        List<Term> terms = new ArrayList<>();
+        for (String user : users){
+            usersData.put(user.toLowerCase(), new ArrayList<>());
+        }
+        for (String data : personalData){
+            String potentialUserName = data.substring(data.lastIndexOf("_") + 1).toLowerCase();
+            if (usersData.containsKey(potentialUserName)){
+                usersData.get(potentialUserName).add(data);
+            }
+        }
+        for (String user : users){
+            List<String> userData = usersData.get(user.toLowerCase());
+            Term t = new Compound("personal", new Term[]{
+                    new Atom(user),
+                    Term.stringArrayToList(userData.toArray(new String[0]))
+            });
+            terms.add(t);
+        }
+        System.out.println(terms.toString());
+        return terms;
     }
 
     /**
-     * Loads all time predicates to the Prolog solver
+     * Loads all time terms to the Prolog solver
      */
-    private void loadTimePredicates(){
-        loadPredicatesFromList(buildTimePredicates());
-        predicatesLoad.add("tCurrent/1");
-        predicatesLoad.add("tLimit/2");
+    private void loadTimeTerms(){
+        loadTermsFromList(buildTimeTerms());
+        /*predicatesLoad.add("tCurrent/1");
+        predicatesLoad.add("tLimit/2");*/
     }
 
     /**
-     * Loads all personal data predicates to the Prolog solver, based on the provenance graph
+     * Loads all personal data terms to the Prolog solver, based on the provenance graph
      */
-    private void loadPersonalDataPredicates(){
+    private void loadPersonalDataTerms(){
         if (!personalData.isEmpty()) {
-            loadPredicatesFromList(buildPersonalDataPredicates());
-            predicatesLoad.add("personal/2");
+            loadTermsFromList(buildPersonalDataTerms());
+//            predicatesLoad.add("personal/2");
         }
     }
 
@@ -242,8 +293,8 @@ public class Solver {
      */
     public void solve() throws IOException {
         loadPrologFile("RGPD/causal_dependencies.pl");
-        loadTimePredicates();
-        loadPersonalDataPredicates();
+        loadTimeTerms();
+        loadPersonalDataTerms();
         loadPrologFile(provenanceGraphPath);
 
         for (String s : queries){
@@ -299,21 +350,23 @@ public class Solver {
             q.allSolutions();
         }
 
-
         resetSolver();
     }
 
     public static void main(String[] args) throws IOException {
         List<String> queries = List.of("legal(P,D,C,TG,T)","eraseCompliant(D)","storageLimitation(D)","rightAccess(S)");
 
-        System.out.println("cas du graphe fourni dans le sujet :");
-        Solver s1 = new Solver("testfiles/SN_prov_graph.pl",queries, 61983,43200,57600,2628000);
+        /*System.out.println("cas du graphe fourni dans le sujet :");
+        Solver s1 = new Solver("Solver/testfiles/SN_prov_graph.pl",queries, 61983,43200,57600,2628000);
         s1.solve();
 
 
 
         System.out.println("\ncas d'un graphe modifié avec plus de problèmes :");
-        Solver s2 = new Solver("testfiles/SN_prov_graph_pb.pl",queries, 61983,43200,57600,30000);
-        s2.solve();
+        Solver s2 = new Solver("Solver/testfiles/SN_prov_graph_pb.pl",queries, 61983,43200,57600,30000);
+        s2.solve();*/
+
+        Solver s = new Solver("temp/webstore_graph_Alice.pl", queries, 115000, 43200,57600,2628000);
+        s.solve();
     }
 }
