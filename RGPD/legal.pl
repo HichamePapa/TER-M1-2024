@@ -27,4 +27,4 @@ legal(P,D,_C,_TG,T):-
 		(consentFoundOk(D,PU,T);
 		(\+ consentFoundOk(D,PU,T), writeConsentNotFound(P,D,PU,T)))
 	);
-	((\+ (used(P,D,_R,T),action(P,_PU))),writeNoDataUsed()).
+	((\+ (used(P,D,_R,T),action(P,_PU),isPersonalP(D))),writeNoDataUsed()).
