@@ -4,6 +4,6 @@ storageLimitationOk(D,TG):-
 	(tCurrent(TCURRENT),tLimit('storage',TLIMITSTORAGE),(TCURRENT-TG)<TLIMITSTORAGE, !).
 
 storageLimitation(D):-
-	(wasGeneratedBy(_P,D,_R,TG),isPersonalP(D),
-		(storageLimitationOk(D,TG);
-		(\+ storageLimitationOk(D,TG), writeStorageLimitationNotCompliant(D,TG)))).
+	(wasGeneratedBy(_P,D,_R,TG),isPersonalP(D,DP),
+		(storageLimitationOk(DP,TG);
+		(\+ storageLimitationOk(DP,TG), writeStorageLimitationNotCompliant(DP,TG)))).

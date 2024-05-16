@@ -20,8 +20,8 @@ consentFoundOk(D,PU,T):-
 	).
 
 legal(P,D,_C,_TG,T):-
-	(used(P,D,_R,T),action(P,PU),isPersonalP(D),
-		(consentFoundOk(D,PU,T);
-		(\+ consentFoundOk(D,PU,T), writeConsentNotFound(P,D,PU,T)))
+	(used(P,D,_R,T),action(P,PU),isPersonalP(D,DP),
+		(consentFoundOk(DP,PU,T);
+		(\+ consentFoundOk(DP,PU,T), writeConsentNotFound(P,DP,PU,T)))
 	);
-	((\+ (used(P,D,_R,T),action(P,_PU),isPersonalP(D))),writeNoDataUsed()).
+	((\+ (used(P,D,_R,T),action(P,_PU),isPersonalP(D,_DP))),writeNoDataUsed()).

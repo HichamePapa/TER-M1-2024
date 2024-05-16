@@ -5,6 +5,6 @@ storageLimitationOk(D,TU):-
 	(notAvailable(D,T),(tLimit('storage',TLIMITSTORAGE),(T-TU)<TLIMITSTORAGE), !).
 
 storageLimitation(D):-
-	(used(P,D,_R,TU),isPersonalP(D),\+ (action(P,'delete')),
-		(storageLimitationOk(D,TU);
-		(\+ storageLimitationOk(D,TU), writeStorageLimitationNotCompliant(D,TU)))).
+	(used(P,D,_R,TU),isPersonalP(D,DP),\+ (action(P,'delete')),
+		(storageLimitationOk(DP,TU);
+		(\+ storageLimitationOk(DP,TU), writeStorageLimitationNotCompliant(DP,TU)))).
