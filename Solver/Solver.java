@@ -1,8 +1,10 @@
 package Solver;
 
+import Traducteur.Converter;
 import Traducteur.Parser;
 import org.jpl7.*;
 import org.jpl7.Integer;
+import org.jpl7.fli.predicate_t;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,8 +21,8 @@ public class Solver {
     private List<String> users; // List of every user found in the provenance graph. Given by Parser
     private List<String> process; // List of every process found in the provenance graph. Given by Parser
 
-    final Set<String> filesLoad = new HashSet<>();
-    final Set<String> predicatesLoad = new HashSet<>();
+    private final Set<String> filesLoad = new HashSet<>();
+    private final Set<String> predicatesLoad = new HashSet<>();
 
     /**
      * Initialises the Solver by setting required variables.
@@ -88,16 +90,17 @@ public class Solver {
             Query q = new Query(assertTerm);
             q.hasSolution();
             predicatesLoad.add(t.name() + "/" + t.arity());
+            System.out.println(predicatesLoad);
         }
     }
 
     /**
      * Unloads all previously load predicates from the Prolog solver. It prevents errors for next solver calls.
      */
-    private void unloadAllPredicates(){
+    void unloadAllPredicates(){
         for (String predicate : predicatesLoad){
-            Term pred = Term.textToTerm("abolish(" + predicate + ")");
-            Query q = new Query(pred);
+            Query q = new Query("abolish(" + predicate + ")");
+            System.out.println(q);
             q.hasSolution();
         }
         predicatesLoad.clear();
@@ -108,7 +111,7 @@ public class Solver {
      * @param path Path to the file to load
      * @throws IOException If an error occurs when opening the file
      */
-    private void loadPrologFile(String path) throws IOException{
+    void loadPrologFile(String path) throws IOException{
         Query pred = new Query(
                 "consult",
                 new Term[] {new Atom(path)}
@@ -125,7 +128,7 @@ public class Solver {
      * Unloads all previously load files from the Prolog solver. It prevents errors for next solver calls.
      * @throws RuntimeException If an error occurs when closing a file
      */
-    private void unloadAllFiles() throws RuntimeException {
+    void unloadAllFiles() throws RuntimeException {
         for (String path : filesLoad){
             Query pred = new Query(
                     "unload_file",
@@ -191,7 +194,7 @@ public class Solver {
     /**
      * Loads all time terms to the Prolog solver
      */
-    private void loadTimeTerms(){
+    void loadTimeTerms(){
         loadTermsFromList(buildTimeTerms());
     }
 
@@ -274,10 +277,11 @@ public class Solver {
         Solver s1 = new Solver("Solver/testfiles/SN_prov_graph.pl",queries, 61983,43200,57600,2628000);
         s1.solve();
 
-
-
         System.out.println("\ncas d'un graphe modifié avec plus de problèmes :");
         Solver s2 = new Solver("Solver/testfiles/SN_prov_graph_pb.pl",queries, 61983,43200,57600,30000);
         s2.solve();
+
+        /*Solver s = new Solver("Solver/testfiles/webstore_update_phone.pl",queries, 5000,43200,57600,30000);
+        s.solve();*/
     }
 }
