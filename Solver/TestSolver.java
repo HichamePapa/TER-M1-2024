@@ -1,15 +1,14 @@
 package Solver;
 
 import org.jpl7.*;
+import org.jpl7.Integer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import org.junit.Assert.*;
 
@@ -59,11 +58,12 @@ public class TestSolver {
     Query prop2 = new Query("prop2(X)");
     List<Query> queries = List.of(prop1, prop2);
 
-    String emptyGraphPath = "Solver/testfiles/SN_empty_prov_graph.pl";
-    String termsSubsetCPath = "Solver/testfiles/test_load_subsetC.pl";
-    String termsSubsetDPath = "Solver/testfiles/test_load_subsetD.pl";
+    String emptyGraphPath = "Solver/testfiles/empty_prov_graph.pl";
+    String termsSubsetCPath = "Solver/testfiles/testLoadPrologFile_subsetC.pl";
+    String termsSubsetDPath = "Solver/testfiles/testLoadPrologFile_subsetD.pl";
 
     public void initEmptySolver() throws IOException {
+        // JPL.setDefaultInitArgs(new String[]{"-q", "--no-signals"});
         s = new Solver(emptyGraphPath, new ArrayList<String>(), 0, 0, 0, 0);
         System.out.println("init");
     }
@@ -131,8 +131,8 @@ public class TestSolver {
     @Test
     public void testUnloadAllFiles() throws IOException {
         //initEmptySolver();
-        s.loadPrologFile("Solver/testfiles/test_load_subsetC.pl");
-        s.loadPrologFile("Solver/testfiles/test_load_subsetD.pl");
+        s.loadPrologFile(termsSubsetCPath);
+        s.loadPrologFile(termsSubsetDPath);
         s.unloadAllFiles();
         PrologException ex = assertThrows(PrologException.class, prop1::hasSolution);
         assertTrue(ex.getMessage().contains("existence_error"));
@@ -143,7 +143,42 @@ public class TestSolver {
 
     @Test
     public void testResetSolver(){
+        s.loadTermsFromList(terms);
+        try {
+            s.loadPrologFile(termsSubsetCPath);
+            s.loadPrologFile(termsSubsetDPath);
+        } catch (IOException e) {
+            fail(e.getLocalizedMessage());
+        }
+        s.resetSolver();
+        PrologException ex = assertThrows(PrologException.class, prop1::hasSolution);
+        assertTrue(ex.getMessage().contains("existence_error"));
+        ex = assertThrows(PrologException.class, prop2::hasSolution);
+        assertTrue(ex.getMessage().contains("existence_error"));
+    }
 
+    @Test
+    public void testLoadTimeTerms(){
+        Random random = new Random();
+        int tCurrent = random.nextInt();
+        String[] limits = new String[]{"access", "erase", "storage"};
+        int[] limitValues = new int[]{random.nextInt(), random.nextInt(), random.nextInt()};
+        s.setCurrentTime(tCurrent);
+        s.setAccessTimeLimit(limitValues[0]);
+        s.setEraseTimeLimit(limitValues[1]);
+        s.setStorageTimeLimit(limitValues[2]);
+        s.loadTimeTerms();
+        Query q = new Query("tCurrent", new Variable("X"));
+        Map<String, Term> sol = q.nextSolution();
+        assertEquals(new Integer(tCurrent), sol.get("X"));
+        assertFalse(q.hasMoreSolutions());
+        for (int i = 0; i < limits.length; i++) {
+            String s = limits[i];
+            q = new Query("tLimit", new Term[]{new Atom(s), new Variable("X")});
+            sol = q.nextSolution();
+            assertEquals(new Integer(limitValues[i]), sol.get("X"));
+            assertFalse(q.hasMoreSolutions());
+        }
     }
 
 
