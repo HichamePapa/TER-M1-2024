@@ -1,14 +1,12 @@
-package Traducteur;
-
+import org.junit.Assert;
 import org.junit.Test;
+import static org.junit.Assert.*;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
-
-import static org.junit.Assert.*;
 
 public class testParser {
     Parser p;
