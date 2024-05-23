@@ -1,0 +1,2 @@
+sendCookie used id_bob for purpose thirdParties at time 26 without consent
+erase not compliant : erase of data phone_bob was asked at 35 but not done in time

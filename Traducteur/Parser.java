@@ -54,6 +54,8 @@ public class Parser {
             list = Arrays.stream(dataArray).toList();
             list = list.stream().distinct().collect(Collectors.toList());
 
+            if(list.size() == 1 && list.get(0).equals("")) list.clear();
+
         }
 
         return list;
@@ -102,6 +104,8 @@ public class Parser {
             list = Arrays.stream(userArray).toList();
             list = list.stream().distinct().collect(Collectors.toList());
 
+            if(list.size() == 1 && list.get(0).equals("")) list.clear();
+
         }
 
         return list;
@@ -144,6 +148,8 @@ public class Parser {
             processArray = process.split(",");
             list = Arrays.stream(processArray).toList();
             list = list.stream().distinct().collect(Collectors.toList());
+
+            if(list.size() == 1 && list.get(0).equals("")) list.clear();
 
         }
 

@@ -2,17 +2,23 @@ package Traducteur;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.jpl7.*;
 
 public class Converter {
-//    private String article ;
+    //    private String article ;
     private List<String> principes;
     private String cheminGraphe;
     private String data;
     private String dataSubject;
+    private String process;
 
-    public Converter( List<String> listPrincipes, String cheminGraphe, String donnee, String utilisateur){
+    public Converter( List<String> listPrincipes, String cheminGraphe, String donnee, String utilisateur, String processus){
         this.principes = listPrincipes;
         this.cheminGraphe = cheminGraphe;
+        if (processus != null){
+            this.process = processus;
+        } else
+            this.process = "P";
         if (donnee != null){
             this.data = donnee;
         } else
@@ -35,7 +41,7 @@ public class Converter {
                 case "Lawfullness" : {
                     StringBuilder query = new StringBuilder();
 
-                    query.append("?− legal(P, " + data + ", C, T G, T).");
+                    query.append("legal("+process+", " + data + ", C, TG, T).");
 
                     listQueries.add(query.toString());
 
@@ -45,7 +51,7 @@ public class Converter {
                 case "Right-to-erasure" : {
                     StringBuilder query = new StringBuilder();
 
-                    query.append("?− eraseCompliant("+data+").");
+                    query.append("eraseCompliant("+data+").");
 
                     listQueries.add(query.toString());
 
@@ -54,7 +60,7 @@ public class Converter {
                 case "Storage-limitation" : {
                     StringBuilder query = new StringBuilder();
 
-                    query.append("?− storageLimitation("+data+").");
+                    query.append("storageLimitation("+data+").");
                     listQueries.add(query.toString());
 
                     break;
@@ -62,7 +68,7 @@ public class Converter {
                 case "Right-to-access" : {
                     StringBuilder query = new StringBuilder();
 
-                    query.append("?− rigthAccess("+dataSubject+").");
+                    query.append("rightAccess("+dataSubject+").");
 
                     listQueries.add(query.toString());
 
@@ -74,10 +80,6 @@ public class Converter {
         }
 
         return listQueries;
-    }
-
-    public void convertToComprehenText(){
-        //
     }
 
     public String getCheminGraphe(){
