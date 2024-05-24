@@ -98,7 +98,6 @@ public class Solver {
             Query q = new Query(assertTerm);
             q.hasSolution();
             predicatesLoad.add(t.name() + "/" + t.arity());
-            System.out.println(predicatesLoad);
         }
     }
 
@@ -108,7 +107,6 @@ public class Solver {
     void unloadAllPredicates(){
         for (String predicate : predicatesLoad){
             Query q = new Query("abolish(" + predicate + ")");
-            System.out.println(q);
             q.hasSolution();
         }
         predicatesLoad.clear();
@@ -313,15 +311,15 @@ public class Solver {
     public static void main(String[] args) throws IOException {
         List<String> queries = List.of("legal(P,D,C,TG,T)","eraseCompliant(D)","storageLimitation(D)","rightAccess(S)");
 
-        System.out.println("cas du graphe fourni dans le sujet :");
+        /*System.out.println("cas du graphe fourni dans le sujet :");
         Solver s1 = new Solver("Solver/testfiles/SN_prov_graph.pl",queries, 61983,43200,57600,2628000);
         s1.solve();
 
         System.out.println("\ncas d'un graphe modifié avec plus de problèmes :");
         Solver s2 = new Solver("Solver/testfiles/SN_prov_graph_pb.pl",queries, 61983,43200,57600,30000);
-        s2.solve();
+        s2.solve();*/
 
-        /*Solver s = new Solver("Solver/testfiles/webstore_update_phone.pl",queries, 5000,43200,57600,30000);
-        s.solve();*/
+        Solver s = new Solver("Solver/testfiles/consent_compliant.pl",queries, 5000,43200,57600,30000);
+        s.solve();
     }
 }
