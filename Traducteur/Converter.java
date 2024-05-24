@@ -1,6 +1,7 @@
 package Traducteur;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.jpl7.*;
 
@@ -8,26 +9,26 @@ public class Converter {
     //    private String article ;
     private List<String> principes;
     private String cheminGraphe;
-    private String data;
-    private String dataSubject;
-    private String process;
+    private List<String> datas;
+    private List<String> dataSubjects;
+    private List<String> processes;
 
-    public Converter( List<String> listPrincipes, String cheminGraphe, String donnee, String utilisateur, String processus){
+    public Converter( List<String> listPrincipes, String cheminGraphe, List<String> donnees, List<String> utilisateurs, List<String> processus){
         this.principes = listPrincipes;
         this.cheminGraphe = cheminGraphe;
-        if (processus != null){
-            this.process = processus;
+        if (processus != null && !processus.isEmpty()){
+            this.processes = processus;
         } else
-            this.process = "P";
-        if (donnee != null){
-            this.data = donnee;
+            this.processes = Collections.singletonList("P");
+        if (donnees != null && !donnees.isEmpty()){
+            this.datas = donnees;
         } else
-            this.data = "D";
+            this.datas = Collections.singletonList("D");
 
-        if (utilisateur != null) {
-            this.dataSubject = utilisateur;
+        if (utilisateurs != null && !utilisateurs.isEmpty()) {
+            this.dataSubjects = utilisateurs;
         } else
-            this.dataSubject = "S";
+            this.dataSubjects = Collections.singletonList("S");
     }
 
     public List<String> ConvertToPrologQuery(){
@@ -39,38 +40,48 @@ public class Converter {
             switch (principe){
 
                 case "Lawfullness" : {
-                    StringBuilder query = new StringBuilder();
+                    for(String process : processes) {
+                        for(String data : datas) {
+                            StringBuilder query = new StringBuilder();
 
-                    query.append("legal("+process+", " + data + ", C, TG, T).");
+                            query.append("legal(" + process + ", " + data + ", C, TG, T).");
 
-                    listQueries.add(query.toString());
+                            listQueries.add(query.toString());
+                        }
+                    }
 
                     break;
                 }
 
                 case "Right-to-erasure" : {
-                    StringBuilder query = new StringBuilder();
+                    for(String data : datas) {
+                        StringBuilder query = new StringBuilder();
 
-                    query.append("eraseCompliant("+data+").");
+                        query.append("eraseCompliant(" + data + ").");
 
-                    listQueries.add(query.toString());
+                        listQueries.add(query.toString());
+                    }
 
                     break;
                 }
                 case "Storage-limitation" : {
-                    StringBuilder query = new StringBuilder();
+                    for(String data : datas) {
+                        StringBuilder query = new StringBuilder();
 
-                    query.append("storageLimitation("+data+").");
-                    listQueries.add(query.toString());
+                        query.append("storageLimitation(" + data + ").");
+                        listQueries.add(query.toString());
+                    }
 
                     break;
                 }
                 case "Right-to-access" : {
-                    StringBuilder query = new StringBuilder();
+                    for(String dataSubject : dataSubjects) {
+                        StringBuilder query = new StringBuilder();
 
-                    query.append("rightAccess("+dataSubject+").");
+                        query.append("rightAccess(" + dataSubject + ").");
 
-                    listQueries.add(query.toString());
+                        listQueries.add(query.toString());
+                    }
 
                     break;
                 }

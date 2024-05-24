@@ -298,7 +298,7 @@ public class Solver {
 
             Query q = new Query(s);
             q.allSolutions();
-            // Put things back
+
 
         }
         System.out.flush();

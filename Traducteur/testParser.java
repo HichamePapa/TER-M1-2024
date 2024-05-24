@@ -1,3 +1,6 @@
+package Traducteur;
+
+import Traducteur.Parser;
 import org.junit.Assert;
 import org.junit.Test;
 import static org.junit.Assert.*;

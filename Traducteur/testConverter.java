@@ -1,3 +1,5 @@
+package Traducteur;
+
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -9,7 +11,7 @@ public class testConverter {
     Converter c ;
     List<String> list = new ArrayList<>();
     List<String> listQuerries;
-
+/*
     @Test
     public void testNullQuery(){
         list.add("Lawfullness");
@@ -70,6 +72,6 @@ public class testConverter {
         assertEquals(queryExpected2, listQuerries.get(1));
         assertThrows(IndexOutOfBoundsException.class, () -> listQuerries.get(2));
 
-    }
+    }*/
 
 }

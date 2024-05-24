@@ -82,9 +82,6 @@ public class ScreenController {
 
         ArrayList<String> selectedPrinciples = new ArrayList<>();
         String graphPath = graph.getAbsolutePath();
-        AtomicReference<String> data = new AtomicReference<>();
-        AtomicReference<String> user = new AtomicReference<>();
-        AtomicReference<String> process = new AtomicReference<>();
 
 
         Label principlesLabel = new Label("Sélectionner les principes à vérfiier :");
@@ -99,36 +96,34 @@ public class ScreenController {
 
         Label datasLabel = new Label("Sélectionner la donnée à vérifier :");
         choiceScreen.getChildren().addLast(datasLabel);
-        ToggleGroup datasGroup = new ToggleGroup();
         List<String> datas = parser.parserData();
+
+        ArrayList<CheckBox> datasBoxes = new ArrayList<>();
         if(datas.isEmpty()){
             choiceScreen.getChildren().addLast(new Text("Aucune donnée disponible"));
         }
         else {
             for (String d : datas) {
-                RadioButton dataBtn = new RadioButton(d);
-                dataBtn.setToggleGroup(datasGroup);
-                dataBtn.setOnAction(e -> {
-                        data.set(dataBtn.getText());
-                });
+
+                CheckBox dataBtn = new CheckBox(d);
+                dataBtn.setMnemonicParsing(false);     //if true the first underscore doesn't show up
+                datasBoxes.add(dataBtn);
                 choiceScreen.getChildren().addLast(dataBtn);
             }
         }
 
         Label usersLabel = new Label("Sélectionner l'utilisateur à vérifier :");
         choiceScreen.getChildren().addLast(usersLabel);
-        ToggleGroup usersGroup = new ToggleGroup();
         List<String> users = parser.parserUser();
+        ArrayList<CheckBox>  usersBoxes = new ArrayList<>();
         if(users.isEmpty()){
             choiceScreen.getChildren().addLast(new Text("Aucun utilisateur disponible"));
         }
         else {
             for (String u : users) {
-                RadioButton userBtn = new RadioButton(u);
-                userBtn.setToggleGroup(usersGroup);
-                userBtn.setOnAction(e -> {
-                    user.set(userBtn.getText());
-                });
+                CheckBox userBtn = new CheckBox(u);
+                userBtn.setMnemonicParsing(false);
+                usersBoxes.add(userBtn);
                 choiceScreen.getChildren().addLast(userBtn);
 
             }
@@ -136,18 +131,16 @@ public class ScreenController {
 
         Label processLabel = new Label("Sélectionner le processus à vérifier :");
         choiceScreen.getChildren().addLast(processLabel);
-        ToggleGroup processGroup = new ToggleGroup();
         List<String> processes = parser.parserProcess();
+        ArrayList<CheckBox> processesBoxes = new ArrayList<>();
         if(processes.isEmpty()){
             choiceScreen.getChildren().addLast(new Text("Aucun processus disponible"));
         }
         else {
             for (String p : processes) {
-                RadioButton processBtn = new RadioButton(p);
-                processBtn.setToggleGroup(processGroup);
-                processBtn.setOnAction(e -> {
-                    process.set(processBtn.getText());
-                });
+                CheckBox processBtn = new CheckBox(p);
+                processBtn.setMnemonicParsing(false);
+                processesBoxes.add(processBtn);
                 choiceScreen.getChildren().addLast(processBtn);
             }
         }
@@ -160,7 +153,21 @@ public class ScreenController {
             if (principle3.isSelected()) selectedPrinciples.add("Right-to-access");
             if (principle4.isSelected()) selectedPrinciples.add("Storage-limitation");
 
-            Converter converter = new Converter(selectedPrinciples,graphPath,data.get(),user.get(),process.get());
+            ArrayList<String>  selectedDatas = new ArrayList<>();
+            ArrayList<String> selectedUsers = new ArrayList<>();
+            ArrayList<String> selectedProcesses = new ArrayList<>();
+
+            for(CheckBox d : datasBoxes){
+                if(d.isSelected()) selectedDatas.add(d.getText());
+            }
+            for(CheckBox u : usersBoxes){
+                if(u.isSelected()) selectedUsers.add(u.getText());
+            }
+            for(CheckBox p : processesBoxes){
+                if(p.isSelected()) selectedProcesses.add(p.getText());
+            }
+
+            Converter converter = new Converter(selectedPrinciples,graphPath,selectedDatas,selectedUsers,selectedProcesses);
             solveController.setConverter(converter);
             activate("timesScreen");
         });
