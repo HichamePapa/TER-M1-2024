@@ -1,0 +1,2 @@
+sendAdSMS used phoneNumber_David_1 for purpose sendAdSMS at time 24 without consent
+sendAdSMS used phoneNumber_David_1 for purpose sendAdSMS at time 25 without consent

@@ -1,12 +1,7 @@
 package Traducteur;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.io.*;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -53,6 +48,8 @@ public class Parser {
             dataArray = data.split(",");
             list = Arrays.stream(dataArray).toList();
             list = list.stream().distinct().collect(Collectors.toList());
+
+            if(list.size() == 1 && list.get(0).equals("")) list.clear();
 
         }
 
@@ -102,6 +99,8 @@ public class Parser {
             list = Arrays.stream(userArray).toList();
             list = list.stream().distinct().collect(Collectors.toList());
 
+            if(list.size() == 1 && list.get(0).equals("")) list.clear();
+
         }
 
         return list;
@@ -144,6 +143,8 @@ public class Parser {
             processArray = process.split(",");
             list = Arrays.stream(processArray).toList();
             list = list.stream().distinct().collect(Collectors.toList());
+
+            if(list.size() == 1 && list.get(0).equals("")) list.clear();
 
         }
 

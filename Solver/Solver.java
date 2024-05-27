@@ -6,8 +6,9 @@ import org.jpl7.*;
 import org.jpl7.Integer;
 import org.jpl7.fli.predicate_t;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.*;
 
 public class Solver {
@@ -23,6 +24,10 @@ public class Solver {
 
     private final Set<String> filesLoad = new HashSet<>();
     private final Set<String> predicatesLoad = new HashSet<>();
+
+    // Redirect console output to the ps stream
+    private final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    private final PrintStream ps = new PrintStream(baos);
 
     /**
      * Initialises the Solver by setting required variables.
@@ -41,6 +46,9 @@ public class Solver {
         this.tLimitAccess = tLimitAccess;
         this.tLimitErase = tLimitErase;
         this.tLimitStorage = tLimitStorage;
+    }
+
+    public Solver() {
     }
 
     /**
@@ -196,6 +204,25 @@ public class Solver {
         loadTermsFromList(buildTimeTerms());
     }
 
+    void openNewStream(){
+        Query open = new Query("open('compliance_results.txt', write, Fd, [alias(stream)])");
+        open.hasSolution();
+
+        Query setOutput = new Query("set_output(stream)");
+        setOutput.hasSolution();
+    }
+
+    String getResults() throws IOException {
+        Query flush = new Query("flush_output(stream)");
+        flush.hasSolution();
+
+        Query close = new Query("close(stream)");
+        close.hasSolution();
+
+        File results = new File("./compliance_results.txt");
+        return Files.readString(Path.of(results.getAbsolutePath()));
+    }
+
     /**
      * Loads all personal data terms to the Prolog solver, based on the provenance graph
      */
@@ -210,10 +237,18 @@ public class Solver {
     /**
      * Verifies given queries and outputs observations in console.
      */
-    public void solve() throws IOException {
+    public String solve() throws IOException {
+
         loadPrologFile("RGPD/causal_dependencies.pl");
         loadTimeTerms();
+
+
+        PrintStream old = System.out;
+        System.setOut(ps);
+
         loadPrologFile(provenanceGraphPath);
+        openNewStream();
+
 
         for (String s : queries){
             if (s.startsWith("legal")){
@@ -263,9 +298,14 @@ public class Solver {
 
             Query q = new Query(s);
             q.allSolutions();
-        }
 
+
+        }
+        System.out.flush();
+        System.setOut(old);
         resetSolver();
+
+        return baos + getResults();
     }
 
     public static void main(String[] args) throws IOException {
