@@ -17,13 +17,7 @@ purposes('consent_David_1','name_David_1',['buyItem']).
 purposes('consent_David_1','physicalAddress_David_1',['buyItem']).
 purposes('consent_David_1','id_David_1',['sendImprovementCookie','sendThirdPartiesCookie']).
 
-wasControlledBy('buyItem','David', 'owner', 41, 47).
-used('buyItem', 'bankAccount_David_1', 'bank account', 42).
-wasControlledBy('sendThirdPartiesCookie','DC', 'owner', 43, 46).
-wasGeneratedBy('marketing_cookie', 'sendThirdPartiesCookie', 'cookie to send', 44).
-used('sendThirdPartiesCookie','id_David_1', 'user id', 45).
-used('sendThirdPartiesCookie','marketing_cookie', 'cookie', 46).
-wasGeneratedBy('receipt', 'buyItem', 'receipt', 47).
+
 
 wasControlledBy('sendTicket','David', 'owner', 10, 13).
 used('sendTicket', 'mail_David_1', 'ticket sender mail', 11).
@@ -33,6 +27,7 @@ used('sendTicket', 'ticket', 'ticket sent', 13).
 
 wasControlledBy('askDataAccess','David', 'owner', 14, 15).
 wasGeneratedBy('data_request', 'askDataAccess', 'request', 15).
+
 
 wasControlledBy('sendData','DC', 'owner', 1064, 1069).
 wasControlledBy('sendImprovementCookie','DC', 'owner', 1065, 1068).
@@ -48,14 +43,24 @@ wasControlledBy('updateData','David', 'owner', 36, 38).
 used('updateData', 'phoneNumber_Bob_1', 'data to update', 37).
 wasGeneratedBy('phoneNumber_Bob_2', 'updateData', 'updated data', 38).
 
-wasControlledBy('sendAdSMS','DC', 'owner', 22, 25).
-wasGeneratedBy('ad', 'sendAdSMS', 'ad to send', 23).
-used('sendAdSMS','phoneNumber_David_2', 'user id', 24).
-used('sendAdSMS','ad', 'ad sms', 25).
+wasControlledBy('buyItem','David', 'owner', 41, 47).
+used('buyItem', 'bankAccount_David_1', 'bank account', 42).
+wasControlledBy('sendThirdPartiesCookie','DC', 'owner', 43, 46).
+wasGeneratedBy('marketing_cookie', 'sendThirdPartiesCookie', 'cookie to send', 44).
+used('sendThirdPartiesCookie','id_David_1', 'user id', 45).
+used('sendThirdPartiesCookie','marketing_cookie', 'cookie', 46).
+wasGeneratedBy('receipt', 'buyItem', 'receipt', 47).
 
-wasControlledBy('askErase','David', 'owner', 26, 28).
-used('askErase', 'phoneNumber_David_2', 'to erase data', 27).
-used('askErase', 'bankAccount_David_1', 'to erase data', 28).
+wasControlledBy('sendAdSMS','DC', 'owner', 52, 55).
+wasGeneratedBy('ad', 'sendAdSMS', 'ad to send', 53).
+used('sendAdSMS','phoneNumber_David_2', 'user id', 54).
+used('sendAdSMS','ad', 'ad sms', 55).
+
+wasControlledBy('askErase','David', 'owner', 56, 58).
+used('askErase', 'phoneNumber_David_2', 'to erase data', 57).
+used('askErase', 'bankAccount_David_1', 'to erase data', 58).
+
+
 
 
 wasControlledBy('delete','DC', 'owner', 2060, 2062).
