@@ -45,18 +45,19 @@ public class TestSolver {
     Term prop2B = Term.textToTerm("prop2('B')");
     Term prop2C = Term.textToTerm("prop2('C')");
     Term prop2D = Term.textToTerm("prop2('D')");
-    Term prop2E = Term.textToTerm("prop2('E')");
+    Term prop3A = Term.textToTerm("prop3('A')");
 
     List<Term> terms = List.of(prop1A, prop1B, prop1C, prop1D,
-            prop2A, prop2B, prop2C, prop2D, prop2E);
+            prop2A, prop2B, prop2C, prop2D, prop3A);
     List<Term> termsSubsetA = List.of(prop1A, prop1B, prop1C, prop2C);
     List<Term> termsSubsetB = List.of(prop2A, prop2B);
     List<Term> termsSubsetC = List.of(prop1D, prop2D);
-    List<Term> termsSubsetD = List.of(prop2E);
+    List<Term> termsSubsetD = List.of(prop3A);
 
     Query prop1 = new Query("prop1(X)");
     Query prop2 = new Query("prop2(X)");
-    List<Query> queries = List.of(prop1, prop2);
+    Query prop3 = new Query("prop3(X)");
+    List<Query> queries = List.of(prop1, prop2, prop3);
 
     String emptyGraphPath = "Solver/testfiles/empty_prov_graph.pl";
     String termsSubsetCPath = "Solver/testfiles/testLoadPrologFile_subsetC.pl";
@@ -116,11 +117,12 @@ public class TestSolver {
             assertTrue(new Query(t).hasSolution());
         }
         for (Term t : termsSubsetD){
-            assertFalse(new Query(t).hasSolution());
+            PrologException ex = assertThrows(PrologException.class, prop3::hasSolution);
+            assertTrue(ex.getMessage().contains("existence_error"));
         }
         s.loadPrologFile(termsSubsetDPath);
         for (Term t : termsSubsetC){
-            assertTrue(new Query(t).hasSolution()); // provoque un warning
+            assertTrue(new Query(t).hasSolution());
         }
         for (Term t : termsSubsetD){
             assertTrue(new Query(t).hasSolution());
