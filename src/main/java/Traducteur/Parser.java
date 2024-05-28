@@ -46,7 +46,7 @@ public class Parser {
             }
             data = listBuilder.toString();
             dataArray = data.split(",");
-            list = Arrays.stream(dataArray).toList();
+            list = Arrays.asList(dataArray);
             list = list.stream().distinct().collect(Collectors.toList());
 
             if(list.size() == 1 && list.get(0).equals("")) list.clear();
@@ -96,7 +96,7 @@ public class Parser {
             }
             user = listBuilder.toString();
             userArray = user.split(",");
-            list = Arrays.stream(userArray).toList();
+            list = Arrays.asList(userArray);
             list = list.stream().distinct().collect(Collectors.toList());
 
             if(list.size() == 1 && list.get(0).equals("")) list.clear();
@@ -141,7 +141,7 @@ public class Parser {
             }
             process = listBuilder.toString();
             processArray = process.split(",");
-            list = Arrays.stream(processArray).toList();
+            list = Arrays.asList(processArray);
             list = list.stream().distinct().collect(Collectors.toList());
 
             if(list.size() == 1 && list.get(0).equals("")) list.clear();
