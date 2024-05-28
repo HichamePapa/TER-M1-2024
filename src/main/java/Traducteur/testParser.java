@@ -16,7 +16,7 @@ public class testParser {
     List<String> listProcess;
 
 
-    //tests pour le parseur des donnees
+//tests pour le parseur des donnees
     @Test
     public void testParserDataEmptyFile() throws IOException {
         File fichier = new File("Files/file");
@@ -38,7 +38,7 @@ public class testParser {
         br.close();
         p = new Parser(fichier);
         listData = p.parserData();
-        assertEquals("",listData.get(0));
+        assertTrue(listData.isEmpty());
     }
 
     @Test
@@ -152,7 +152,7 @@ public class testParser {
         br.close();
         p = new Parser(fichier);
         listUser = p.parserData();
-        assertEquals("",listUser.get(0));
+        assertTrue(listUser.isEmpty());
     }
 
     @Test
@@ -247,7 +247,7 @@ public class testParser {
         br.close();
         p = new Parser(fichier);
         listProcess = p.parserData();
-        assertEquals("",listProcess.get(0));
+        assertTrue(listProcess.isEmpty());
     }
 
     @Test
