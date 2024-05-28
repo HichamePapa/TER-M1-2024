@@ -1,6 +1,7 @@
 package Solver;
 
 import Traducteur.Parser;
+import org.apache.commons.io.IOUtils;
 import org.jpl7.*;
 import org.jpl7.Integer;
 
@@ -9,6 +10,8 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 
 public class Solver {
@@ -57,6 +60,7 @@ public class Solver {
      * @throws IOException If an error occurs when opening the file
      */
     public void setProvenanceGraphPath(String provenanceGraphPath) throws IOException {
+       
         this.provenanceGraphPath = provenanceGraphPath;
         Parser parser = new Parser(new File(provenanceGraphPath));
         this.personalData = parser.parserData();
@@ -130,29 +134,39 @@ public class Solver {
         }
     }
 
-    void loadResource(String path) throws IOException {
+    void loadResource(String resource) throws IOException {
+        String resourceDirs = "." + resource.substring(0,resource.lastIndexOf("/"));
+        new File(resourceDirs).mkdirs();  //Create resource copy directory if absent
 
-        path = Objects.requireNonNull(Solver.class.getClassLoader().getResource(path)).getPath();
-        path = URLDecoder.decode(path,"UTF-8");    //Ensure that the path is correctly decoded
+        File resourceFile = new File("." +resource+"-copy");
+       if(!resourceFile.exists())  resourceFile.createNewFile();
 
-        if(path.startsWith("file:")){     //If function is called in jar file
+        InputStream resourceStream = Solver.class.getResourceAsStream(resource);  //Cannot get the file directly due to jar file structure
+        OutputStream out = new FileOutputStream(resourceFile.getPath());
+        IOUtils.copy(resourceStream, out);
+        String path = resourceFile.getPath();
+
+
+
+
+        /*if(path.startsWith("file:")){     //If function is called in jar file
             //TODO: Retrieve file in jar executable
             int beginIndex = "file:".length();
             path = path.substring(beginIndex+1);
         }else {
             path = path.substring(1); //getPath() returns / followed by the path, need to remove the first character
-        }
+        }*/
 
         Query pred = new Query(
                 "consult",
-                new Term[] {new Atom(path)}
+                new Term[] {new Atom(path.toString())}
         );
 
         if (!pred.hasSolution()){
             throw new IOException("error opening " + path);
         }
         else{
-            filesLoad.add(path);
+            filesLoad.add(path.toString());
         }
     }
 
@@ -267,7 +281,7 @@ public class Solver {
      */
     public String solve() throws IOException {
 
-        loadResource("RGPD/causal_dependencies.pl");
+        loadResource("/RGPD/causal_dependencies.pl");
         loadTimeTerms();
 
 
@@ -293,7 +307,7 @@ public class Solver {
                     continue;
                 }
                 else{
-                    loadResource("RGPD/legal.pl");
+                    loadResource("/RGPD/legal.pl");
                 }
             } else if (s.startsWith("rightAccess")){
                 if (users.isEmpty()){
@@ -301,7 +315,7 @@ public class Solver {
                     continue;
                 }
                 else{
-                    loadResource("RGPD/right_access.pl");
+                    loadResource("/RGPD/right_access.pl");
                 }
             } else if (s.startsWith("eraseCompliant")) {
                 if (process.isEmpty()){
@@ -309,7 +323,7 @@ public class Solver {
                     continue;
                 }
                 else{
-                    loadResource("RGPD/erase_compliant.pl");
+                    loadResource("/RGPD/erase_compliant.pl");
                 }
             } else if (s.startsWith("storageLimitation")) {
                 if (process.isEmpty()){
@@ -317,10 +331,10 @@ public class Solver {
                         System.out.println("WARNING - could not check " + s + " as there is no personal data in provenance graph");
                         continue;
                     } else {
-                        loadResource("RGPD/storage_limitation_no_use.pl");
+                        loadResource("/RGPD/storage_limitation_no_use.pl");
                     }
                 } else {
-                    loadResource("RGPD/storage_limitation.pl");
+                    loadResource("/RGPD/storage_limitation.pl");
                 }
             }
 

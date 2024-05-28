@@ -54,7 +54,7 @@ public class ScreenController {
                     initChoiceScreen();
                 } catch (IOException e) {
                     filePathField.clear();
-                    Text error = new Text("Erreur d'ouvertur de fichier");
+                    Text error = new Text("Erreur d'ouverture de fichier");
                     graphPathScreen.getChildren().add(error);
                 }
                 activate("choiceScreen");
