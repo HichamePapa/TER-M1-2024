@@ -26,10 +26,11 @@ used('sendTicket', 'ticket', 'ticket sent', 13).
 
 
 wasControlledBy('askDataAccess','David', 'owner', 14, 15).
-wasGeneratedBy('data_request', 'askDataAccess', 'request', 15).
+wasGeneratedBy('data_request_David', 'askDataAccess', 'request', 15).
 
 
 wasControlledBy('sendData','DC', 'owner', 1064, 1069).
+used()
 wasControlledBy('sendImprovementCookie','DC', 'owner', 1065, 1068).
 wasGeneratedBy('improvement_cookie', 'sendImprovementCookie', 'cookie to send', 1066).
 used('sendImprovementCookie','id_David_1', 'user id', 1067).

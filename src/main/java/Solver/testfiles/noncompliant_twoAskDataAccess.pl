@@ -14,13 +14,14 @@ used('sendAdSMS','ad','ad sms', 11).
 
 
 wasControlledBy('askDataAccess','Alice','owner', 14, 15).
-wasGeneratedBy('data_request','askDataAccess','request', 15).
+wasGeneratedBy('data_request_Alice_1','askDataAccess','request', 15).
 
-wasControlledBy('sendData','DC','owner', 1064, 1065).
-wasGeneratedBy('data_report','sendData','data response', 1065).
+wasControlledBy('sendData','DC','owner', 1064, 1066).
+used('data_request_Alice_1','sendData','data request received', 1065).
+wasGeneratedBy('data_report_Alice_1','sendData','data response', 1066).
 
 wasControlledBy('askDataAccess','Alice','owner', 2024, 2025).
-wasGeneratedBy('data_request','askDataAccess','request', 2025).
+wasGeneratedBy('data_request_Alice_2','askDataAccess','request', 2025).
 
 
 action('sendData', 'sendData').

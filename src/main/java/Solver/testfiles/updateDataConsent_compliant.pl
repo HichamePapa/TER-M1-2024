@@ -15,7 +15,7 @@ wasGeneratedBy('phoneNumber_David_2','updateData','updated data', 38).
 
 wasControlledBy('updateConsent','David','owner', 39, 41).
 used('updateConsent','consent_David_1','consent', 40).
-wasGeneratedBy('consent_David_2','update','consent', 41).
+wasGeneratedBy('consent_David_2','updateConsent','consent', 41).
 
 purposes('consent_David_2','phoneNumber_David_2',['sendAdSMS']).
 

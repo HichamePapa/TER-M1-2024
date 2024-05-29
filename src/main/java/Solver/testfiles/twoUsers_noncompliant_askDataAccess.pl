@@ -14,7 +14,7 @@ used('sendAdSMS','ad','ad sms', 11).
 
 
 wasControlledBy('askDataAccess','Alice','owner', 14, 15).
-wasGeneratedBy('data_request','askDataAccess','request', 15).
+wasGeneratedBy('data_request_Alice','askDataAccess','request', 15).
 
 
 wasControlledBy('createAccount','Bob','owner',1,2).
@@ -26,10 +26,11 @@ wasGeneratedBy('consent_Bob_1','consent','consent', 4).
 purposes('consent_Bob_1','phoneNumber_Bob_1',['']).
 
 wasControlledBy('askDataAccess','Bob','owner', 24, 25).
-wasGeneratedBy('data_request','askDataAccess','request', 25).
+wasGeneratedBy('data_request_Bob','askDataAccess','request', 25).
 
-wasControlledBy('sendData','DC','owner', 1064, 1065).
-wasGeneratedBy('data_report','sendData','data response', 1065).
+wasControlledBy('sendData','DC','owner', 1064, 1066).
+used('sendData','data_request_Bob', 'data request received',1065)
+wasGeneratedBy('data_report_Bob','sendData','data response', 1066).
 
 
 
