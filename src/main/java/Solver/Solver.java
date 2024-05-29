@@ -150,17 +150,6 @@ public class Solver {
         IOUtils.copy(resourceStream, out);
         String path = resourceFile.getPath();
 
-
-
-
-        /*if(path.startsWith("file:")){     //If function is called in jar file
-            //TODO: Retrieve file in jar executable
-            int beginIndex = "file:".length();
-            path = path.substring(beginIndex+1);
-        }else {
-            path = path.substring(1); //getPath() returns / followed by the path, need to remove the first character
-        }*/
-
         Query pred = new Query(
                 "consult",
                 new Term[] {new Atom(path.toString())}

@@ -33,11 +33,14 @@ public class ScreenController {
     }
 
     public void initGraphPathScreen(){
+        graph = null;
+        timeFile = null;
+
         VBox graphPathScreen = new VBox(10);
         graphPathScreen.setPadding(new Insets(20, 20, 20, 20));
 
         // titre
-        Label fileLabel = new Label("Chemin:");
+        Label fileLabel = new Label("Entrer le chemin du fichier du graphe:");
 
         // chemin dépendance
         TextField filePathField = new TextField();
@@ -51,7 +54,6 @@ public class ScreenController {
             File graph = new File(path);
             if(graph.isFile()) {
                 this.graph = graph;
-                this.timeFile = timeFile;
                 try {
                     initChoiceScreen();
                 } catch (IOException e) {
@@ -62,6 +64,12 @@ public class ScreenController {
                 activate("choiceScreen");
             }
             else {
+                graphPathScreen.getChildren().removeIf(s -> {
+                    if(s instanceof Text s1) {
+                        return s1.getText().equals("Fichier non trouvé");
+                    }
+                    return false;
+                });
                 filePathField.clear();
                 Text error = new Text("Fichier non trouvé");
                 graphPathScreen.getChildren().add(error);
@@ -81,7 +89,14 @@ public class ScreenController {
         choiceScreen.setPadding(new Insets(20, 20, 20, 20));
 
         Label timeFileLabel = new Label("Entrer le chemin du fichier de données de temps");
-        TextField timeFilePathField = new TextField();
+        TextField timeFilePathField;
+        if(timeFile != null) {
+             timeFilePathField = new TextField(timeFile.getPath());
+        }
+        else{
+            timeFilePathField = new TextField();
+        }
+
         timeFilePathField.setPromptText("Chemin du fichier");
         choiceScreen.getChildren().addAll(timeFileLabel, timeFilePathField);
 
@@ -207,17 +222,20 @@ public class ScreenController {
             }
             activate("resultsScreen");
 
-            //activate("timesScreen");
         });
 
+        Button returnBtn = new Button("Retour");
+        returnBtn.setOnAction(e -> {
+            initGraphPathScreen();
+            activate("graphPathScreen");
+        });
 
-        choiceScreen.getChildren().add(submitButton);
         scroll.setContent(choiceScreen);
 
         VBox choiceScreenScrollable = new VBox(10);
         choiceScreenScrollable.setPadding(new Insets(20, 20, 20, 20));
 
-        choiceScreenScrollable.getChildren().addAll(choiceScreen,scroll);
+        choiceScreenScrollable.getChildren().addAll(choiceScreen,scroll,submitButton,returnBtn);
 
         screenMap.put("choiceScreen",choiceScreenScrollable);
 
@@ -287,6 +305,17 @@ public class ScreenController {
         resultsScreenScrollable.setPadding(new Insets(20, 20, 20, 20));
 
         resultsScreenScrollable.getChildren().addAll(resultsScreen,scroll);
+
+        Button newVerif = new Button("Nouvelle vérification");
+        newVerif.setOnAction(e -> {
+            try {
+                initChoiceScreen();
+                activate("choiceScreen");
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+        resultsScreenScrollable.getChildren().add(newVerif);
 
 
         screenMap.put("resultsScreen",resultsScreenScrollable);
