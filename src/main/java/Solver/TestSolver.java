@@ -42,26 +42,28 @@ public class TestSolver {
     Term prop2B = Term.textToTerm("prop2('B')");
     Term prop2C = Term.textToTerm("prop2('C')");
     Term prop2D = Term.textToTerm("prop2('D')");
-    Term prop2E = Term.textToTerm("prop2('E')");
+    Term prop3A = Term.textToTerm("prop3('A')");
 
     List<Term> terms = List.of(prop1A, prop1B, prop1C, prop1D,
-            prop2A, prop2B, prop2C, prop2D, prop2E);
+            prop2A, prop2B, prop2C, prop2D, prop3A);
     List<Term> termsSubsetA = List.of(prop1A, prop1B, prop1C, prop2C);
     List<Term> termsSubsetB = List.of(prop2A, prop2B);
     List<Term> termsSubsetC = List.of(prop1D, prop2D);
-    List<Term> termsSubsetD = List.of(prop2E);
+    List<Term> termsSubsetD = List.of(prop3A);
 
     Query prop1 = new Query("prop1(X)");
     Query prop2 = new Query("prop2(X)");
-    List<Query> queries = List.of(prop1, prop2);
+    Query prop3 = new Query("prop3(X)");
+    List<Query> queries = List.of(prop1, prop2, prop3);
 
-    String emptyGraphPath = "Solver/testfiles/empty_prov_graph.pl";
-    String termsSubsetCPath = "Solver/testfiles/testLoadPrologFile_subsetC.pl";
-    String termsSubsetDPath = "Solver/testfiles/testLoadPrologFile_subsetD.pl";
+    String emptyGraphPath = "src/main/java/Solver/testfiles/empty_prov_graph.pl";
+    String defaultTimePath = "src/main/java/Solver/testfiles/time_default.pl";
+    String termsSubsetCPath = "src/main/java/Solver/testfiles/testLoadPrologFile_subsetC.pl";
+    String termsSubsetDPath = "src/main/java/Solver/testfiles/testLoadPrologFile_subsetD.pl";
 
     public void initEmptySolver() throws IOException {
         // JPL.setDefaultInitArgs(new String[]{"-q", "--no-signals"});
-        s = new Solver(emptyGraphPath, new ArrayList<String>(), 0, 0, 0, 0);
+        s = new Solver(emptyGraphPath, defaultTimePath, new ArrayList<String>());
         System.out.println("init");
     }
 
@@ -112,9 +114,8 @@ public class TestSolver {
         for (Term t : termsSubsetC){
             assertTrue(new Query(t).hasSolution());
         }
-        for (Term t : termsSubsetD){
-            assertFalse(new Query(t).hasSolution());
-        }
+        PrologException ex = assertThrows(PrologException.class, prop3::hasSolution);
+        assertTrue(ex.getMessage().contains("existence_error"));
         s.loadPrologFile(termsSubsetDPath);
         for (Term t : termsSubsetC){
             assertTrue(new Query(t).hasSolution()); // provoque un warning
@@ -157,14 +158,14 @@ public class TestSolver {
     @Test
     public void testLoadTimeTerms(){
         Random random = new Random();
-        int tCurrent = random.nextInt();
+        int tCurrent = 3000;
         String[] limits = new String[]{"access", "erase", "storage"};
-        int[] limitValues = new int[]{random.nextInt(), random.nextInt(), random.nextInt()};
-        s.setCurrentTime(tCurrent);
-        s.setAccessTimeLimit(limitValues[0]);
-        s.setEraseTimeLimit(limitValues[1]);
-        s.setStorageTimeLimit(limitValues[2]);
-        s.loadTimeTerms();
+        int[] limitValues = new int[]{43200,57600,300000};
+        try {
+            s.loadTimeTerms();
+        } catch (IOException e) {
+            fail(e.getLocalizedMessage());
+        }
         Query q = new Query("tCurrent", new Variable("X"));
         Map<String, Term> sol = q.nextSolution();
         assertEquals(new Integer(tCurrent), sol.get("X"));
