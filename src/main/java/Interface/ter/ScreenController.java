@@ -19,13 +19,14 @@ import java.util.List;
 public class ScreenController {
     private HashMap<String, Pane> screenMap = new HashMap<>();
     private File graph;
+    private File timeFile;
     private Scene main;
 
     private SolveController solveController = new SolveController();
 
     public void init() throws IOException {
         initGraphPathScreen();
-        initTimesScreen();
+        // initTimesScreen();
     }
     public void setMainScene(Scene scene){
         main = scene;
@@ -50,6 +51,7 @@ public class ScreenController {
             File graph = new File(path);
             if(graph.isFile()) {
                 this.graph = graph;
+                this.timeFile = timeFile;
                 try {
                     initChoiceScreen();
                 } catch (IOException e) {
@@ -67,7 +69,8 @@ public class ScreenController {
 
         });
 
-        graphPathScreen.getChildren().addAll(fileLabel, filePathField,submitGraphPath);
+        graphPathScreen.getChildren().addAll(fileLabel, filePathField, submitGraphPath);
+
         screenMap.put("graphPathScreen",graphPathScreen);
 
     }
@@ -76,13 +79,18 @@ public class ScreenController {
         ScrollPane scroll = new ScrollPane();
         VBox choiceScreen = new VBox(10);
         choiceScreen.setPadding(new Insets(20, 20, 20, 20));
+
+        Label timeFileLabel = new Label("Entrer le chemin du fichier de données de temps");
+        TextField timeFilePathField = new TextField();
+        timeFilePathField.setPromptText("Chemin du fichier");
+        choiceScreen.getChildren().addAll(timeFileLabel, timeFilePathField);
+
         Parser parser = new Parser(graph);
 
         ArrayList<String> selectedPrinciples = new ArrayList<>();
         String graphPath = graph.getAbsolutePath();
 
-
-        Label principlesLabel = new Label("Sélectionner les principes à vérfiier :");
+        Label principlesLabel = new Label("Sélectionner les principes à vérifier :");
 
         // Les checkbox
         CheckBox principle1 = new CheckBox("Principe 1: Lawfullness");
@@ -143,8 +151,30 @@ public class ScreenController {
             }
         }
 
+
         Button submitButton = new Button(" Vérifier les principes ");
         submitButton.setOnAction(e -> {
+
+            Solver solver = new Solver();
+            String timePath = timeFilePathField.getText();
+
+            File timeFile = new File(timePath);
+            if(timeFile.isFile()) {
+                this.timeFile = timeFile;
+                try {
+                    solver.setTimeFilePath(timeFile.getAbsolutePath());
+                } catch (IOException err) {
+                    timeFilePathField.clear();
+                    Text error = new Text("Erreur d'ouverture du fichier de données de temps");
+                    choiceScreen.getChildren().add(error);
+                    throw new RuntimeException(String.valueOf(error));
+                }
+            }
+            else {
+                timeFilePathField.clear();
+                Text error = new Text("Fichier non trouvé");
+                choiceScreen.getChildren().add(error);
+            }
 
             if (principle1.isSelected()) selectedPrinciples.add("Lawfullness");
             if (principle2.isSelected()) selectedPrinciples.add("Right-to-erasure");
@@ -168,8 +198,18 @@ public class ScreenController {
 
             Converter converter = new Converter(selectedPrinciples,graphPath,selectedDatas,selectedUsers,selectedProcesses);
             solveController.setConverter(converter);
-            activate("timesScreen");
+
+            solveController.setSolver(solver);
+            try {
+                initResultsScreen();
+            } catch (IOException err) {
+                throw new RuntimeException(err);
+            }
+            activate("resultsScreen");
+
+            //activate("timesScreen");
         });
+
 
         choiceScreen.getChildren().add(submitButton);
         scroll.setContent(choiceScreen);
@@ -204,14 +244,19 @@ public class ScreenController {
         Button submitTimes = new Button("OK");
         submitTimes.setOnAction(event -> {
             Solver solver = new Solver();
-            int value = Integer.parseInt(currentTimeField.getText());
+            /*int value = Integer.parseInt(currentTimeField.getText());
             solver.setCurrentTime(value);
             value = Integer.parseInt(timeAccessField.getText());
             solver.setAccessTimeLimit(value);
             value = Integer.parseInt(timeEraseField.getText());
             solver.setEraseTimeLimit(value);
             value = Integer.parseInt(timeStorageField.getText());
-            solver.setStorageTimeLimit(value);
+            solver.setStorageTimeLimit(value);*/
+            try {
+                solver.setTimeFilePath(timeFile.getAbsolutePath());
+            } catch (IOException e) {
+                throw new RuntimeException("Erreur d'ouverture du fichier de données de temps");
+            }
 
             solveController.setSolver(solver);
             try {

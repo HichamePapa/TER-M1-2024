@@ -16,6 +16,7 @@ import java.util.*;
 
 public class Solver {
     private String provenanceGraphPath;
+    private String timeDataPath;
     private List<String> queries;
     private int tCurrent;
     private int tLimitAccess;
@@ -35,21 +36,20 @@ public class Solver {
     /**
      * Initialises the src.main.java.Solver by setting required variables.
      * @param provenanceGraphPath Path to the Prolog file representing the provenance graph
+     * @param timeDataPath Path to the Prolog file containing time data information
      * @param queries List of queries to submit
-     * @param tCurrent Current time value (at which the verification occurs)
-     * @param tLimitAccess Maximum time authorized for the system to send a user's data after their request
-     * @param tLimitErase Maximum time authorized for the system to delete a user's data after their request
-     * @param tLimitStorage Maximum time authorized for the system to store a data after its last use
      * @throws IOException If provenance graph could not be opened
      */
-    public Solver(String provenanceGraphPath, List<String> queries, int tCurrent, int tLimitAccess, int tLimitErase, int tLimitStorage) throws IOException {
+    public Solver(String provenanceGraphPath, String timeDataPath, List<String> queries) throws IOException {
         setProvenanceGraphPath(provenanceGraphPath);
+        setTimeFilePath(timeDataPath);
         this.queries = queries;
-        this.tCurrent = tCurrent;
+        /*this.tCurrent = tCurrent;
         this.tLimitAccess = tLimitAccess;
         this.tLimitErase = tLimitErase;
-        this.tLimitStorage = tLimitStorage;
+        this.tLimitStorage = tLimitStorage;*/
     }
+
 
     public Solver() {
     }
@@ -66,6 +66,10 @@ public class Solver {
         this.personalData = parser.parserData();
         this.users = parser.parserUser();
         this.process = parser.parserProcess();
+    }
+
+    public void setTimeFilePath(String timeDataPath) throws IOException {
+        this.timeDataPath = timeDataPath;
     }
 
     public void setQueries(List<String> queries){
@@ -240,8 +244,9 @@ public class Solver {
     /**
      * Loads all time terms to the Prolog solver
      */
-    void loadTimeTerms(){
-        loadTermsFromList(buildTimeTerms());
+    void loadTimeTerms() throws IOException {
+        //loadTermsFromList(buildTimeTerms());
+        loadPrologFile(timeDataPath);
     }
 
     void openNewStream(){
@@ -361,7 +366,7 @@ public class Solver {
         src.main.java.Solver s2 = new src.main.java.Solver("src.main.java.Solver/testfiles/SN_prov_graph_pb.pl",queries, 61983,43200,57600,30000);
         s2.solve();*/
 
-        Solver s = new Solver("Solver/testfiles/consent_compliant.pl",queries, 5000,43200,57600,30000);
+        Solver s = new Solver("Solver/testfiles/consent_compliant.pl","Solver/testfiles/time_default.pl",queries);
         s.solve();
     }
 }
