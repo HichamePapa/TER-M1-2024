@@ -19,7 +19,7 @@ public class testParser {
 //tests pour le parseur des donnees
     @Test
     public void testParserDataEmptyFile() throws IOException {
-        File fichier = new File("Files/file");
+        File fichier = new File("src/main/java/Traducteur/testFiles/file");
         FileWriter fw = new FileWriter(fichier);
         fw.close();
         p = new Parser(fichier);
@@ -29,7 +29,7 @@ public class testParser {
 
     @Test
     public void testParserDataWithoutWasGeneratedBy() throws IOException{
-        File fichier = new File("Files/file1");
+        File fichier = new File("src/main/java/Traducteur/testFiles/file1");
         FileWriter fw = new FileWriter(fichier);
         BufferedWriter br = new BufferedWriter(fw);
         br.write("wasControlledBy('create_account','Bob','owner',10,15).\n");
@@ -43,7 +43,7 @@ public class testParser {
 
     @Test
     public void testParserDataWithoutData() throws IOException{
-        File fichier = new File("Files/file2");
+        File fichier = new File("src/main/java/Traducteur/testFiles/file2");
         FileWriter fw = new FileWriter(fichier);
         BufferedWriter br = new BufferedWriter(fw);
         br.write("wasGeneratedBy('','create_account','personal data',15).\n");
@@ -54,7 +54,7 @@ public class testParser {
 
     @Test
     public void testParserDataWithOneData() throws IOException{
-        File fichier = new File("Files/file3");
+        File fichier = new File("src/main/java/Traducteur/testFiles/file3");
         FileWriter fw = new FileWriter(fichier);
         BufferedWriter br = new BufferedWriter(fw);
         br.write("wasGeneratedBy('wall_bob','create_account','personal data',15).\n");
@@ -66,7 +66,7 @@ public class testParser {
     }
     @Test
     public void testParserDataSeveralData() throws IOException{
-        File fichier = new File("Files/file4");
+        File fichier = new File("src/main/java/Traducteur/testFiles/file4");
         FileWriter fw = new FileWriter(fichier);
         BufferedWriter br = new BufferedWriter(fw);
         br.write("wasGeneratedBy('wall_bob','create_account','personal data',15).\n");
@@ -87,7 +87,7 @@ public class testParser {
 
     @Test
     public void testParserDataNumberData() throws IOException{
-        File fichier = new File("Files/file5");
+        File fichier = new File("src/main/java/Traducteur/testFiles/file5");
         FileWriter fw = new FileWriter(fichier);
         BufferedWriter br = new BufferedWriter(fw);
         br.write("wasGeneratedBy('wall_bob','create_account','personal data',15).\n");
@@ -111,7 +111,7 @@ public class testParser {
 
     @Test
     public void testParserDataOnlyPersonalData() throws IOException {
-        File fichier = new File("Files/file6");
+        File fichier = new File("src/main/java/Traducteur/testFiles/file6");
         FileWriter fw = new FileWriter(fichier);
         BufferedWriter br = new BufferedWriter(fw);
         br.write("wasGeneratedBy('wall_bob','create_account','personal data',15).\n");
@@ -134,7 +134,7 @@ public class testParser {
     //tests pour le parseur utilisateurs
     @Test
     public void testParserUserEmptyFile() throws IOException {
-        File fichier = new File("Files/fileUser");
+        File fichier = new File("src/main/java/Traducteur/testFiles/fileUser");
         FileWriter fw = new FileWriter(fichier);
         fw.close();
         p = new Parser(fichier);
@@ -144,7 +144,7 @@ public class testParser {
 
     @Test
     public void testParserUserWithoutWasControlledBy() throws IOException{
-        File fichier = new File("Files/fileUser1");
+        File fichier = new File("src/main/java/Traducteur/testFiles/fileUser1");
         FileWriter fw = new FileWriter(fichier);
         BufferedWriter br = new BufferedWriter(fw);
         br.write("used('consent','privacy_policy_template','template',16).\n");
@@ -157,7 +157,7 @@ public class testParser {
 
     @Test
     public void testParserUserWithoutUser() throws IOException{
-        File fichier = new File("Files/fileUser2");
+        File fichier = new File("src/main/java/Traducteur/testFiles/fileUser2");
         FileWriter fw = new FileWriter(fichier);
         BufferedWriter br = new BufferedWriter(fw);
         br.write("wasControlledBy('create_account','','owner',10,15).\n");
@@ -168,7 +168,7 @@ public class testParser {
 
     @Test
     public void testParserUserWithOneUser() throws IOException{
-        File fichier = new File("Files/fileUser3");
+        File fichier = new File("src/main/java/Traducteur/testFiles/fileUser3");
         FileWriter fw = new FileWriter(fichier);
         BufferedWriter br = new BufferedWriter(fw);
         br.write("wasControlledBy('create_account','Bob','owner',10,15).\n");
@@ -180,7 +180,7 @@ public class testParser {
     }
     @Test
     public void testParserUserSeveralUser() throws IOException{
-        File fichier = new File("Files/fileUser4");
+        File fichier = new File("src/main/java/Traducteur/testFiles/fileUser4");
         FileWriter fw = new FileWriter(fichier);
         BufferedWriter br = new BufferedWriter(fw);
         br.write("wasControlledBy('create_account','Bob','owner',10,15).\n");
@@ -203,7 +203,7 @@ public class testParser {
     public void testParserUserNumberUser() throws IOException{
         //permet aussi de verifier que la methode gere la redondance des utilisateur
 
-        File fichier = new File("Files/fileUser5");
+        File fichier = new File("src/main/java/Traducteur/testFiles/fileUser5");
         FileWriter fw = new FileWriter(fichier);
         BufferedWriter br = new BufferedWriter(fw);
         br.write("wasControlledBy('create_account','Bob','owner',10,15).\n");
@@ -229,7 +229,7 @@ public class testParser {
     //tests pour le parseur des precessus
     @Test
     public void testParserProcessEmptyFile() throws IOException {
-        File fichier = new File("Files/fileProcess");
+        File fichier = new File("src/main/java/Traducteur/testFiles/fileProcess");
         FileWriter fw = new FileWriter(fichier);
         fw.close();
         p = new Parser(fichier);
@@ -239,7 +239,7 @@ public class testParser {
 
     @Test
     public void testParserProcessWithoutAction() throws IOException{
-        File fichier = new File("Files/fileProcess1");
+        File fichier = new File("src/main/java/Traducteur/testFiles/fileProcess1");
         FileWriter fw = new FileWriter(fichier);
         BufferedWriter br = new BufferedWriter(fw);
         br.write("used('consent','privacy_policy_template','template',16).\n");
@@ -252,7 +252,7 @@ public class testParser {
 
     @Test
     public void testParserProcessWithoutProcess() throws IOException{
-        File fichier = new File("Files/fileProcess2");
+        File fichier = new File("src/main/java/Traducteur/testFiles/fileProcess2");
         FileWriter fw = new FileWriter(fichier);
         BufferedWriter br = new BufferedWriter(fw);
         br.write("action('','consent').\n");
@@ -263,7 +263,7 @@ public class testParser {
 
     @Test
     public void testParserProcessWithOneProcess() throws IOException{
-        File fichier = new File("Files/fileProcess3");
+        File fichier = new File("src/main/java/Traducteur/testFiles/fileProcess3");
         FileWriter fw = new FileWriter(fichier);
         BufferedWriter br = new BufferedWriter(fw);
         br.write("action('consent','consent').\n");
@@ -276,7 +276,7 @@ public class testParser {
 
     @Test
     public void testParserProcessSeveralProcess() throws IOException{
-        File fichier = new File("Files/fileProcess4");
+        File fichier = new File("src/main/java/Traducteur/testFiles/fileProcess4");
         FileWriter fw = new FileWriter(fichier);
         BufferedWriter br = new BufferedWriter(fw);
         br.write("action('consent','consent').\n");
@@ -297,7 +297,7 @@ public class testParser {
 
     @Test
     public void testParserProcessNumberProcess() throws IOException{
-        File fichier = new File("Files/fileProcess5");
+        File fichier = new File("src/main/java/Traducteur/testFiles/fileProcess5");
         FileWriter fw = new FileWriter(fichier);
         BufferedWriter br = new BufferedWriter(fw);
         br.write("action('consent','consent').\n");
