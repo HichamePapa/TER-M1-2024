@@ -287,53 +287,70 @@ public class Solver {
 
 
         for (String s : queries){
+            if (personalData.isEmpty()){
+                System.out.println("WARNING - no personal data in provenance graph");
+            }
+
             if (s.startsWith("legal")){
-                if (process.isEmpty()){
-                    System.out.println("WARNING - could not check " + s + " as there is no use of any personal data (no process in provenance graph)");
+                try{
+                    new Query("used(P,A,R,T)").hasSolution();
+                }
+                catch (PrologException e){
+                    System.out.println("WARNING - could not check " + s + " as there is no use of any personal data");
                     continue;
                 }
-                else if (users.isEmpty()){
-                    System.out.println("WARNING - could not check " + s + " as there is no use of any personal data (no users in provenance graph)");
+
+                loadResource("/RGPD/legal.pl");
+
+                try{
+                    Query q = new Query(s);
+                    q.allSolutions();
+                } catch (PrologException e){
+                    System.out.println("consent not compliant as no consent was given");
                     continue;
                 }
-                else if (personalData.isEmpty()){
-                    System.out.println("WARNING - could not check " + s + " as there is no use of any personal data (no personal data in provenance graph)");
-                    continue;
-                }
-                else{
-                    loadResource("/RGPD/legal.pl");
-                }
+
             } else if (s.startsWith("rightAccess")){
-                if (users.isEmpty()){
-                    System.out.println("WARNING - could not check " + s + " as there is no access request (no user in provenance graph)");
+                try {
+                    new Query("wasControlledBy(P,S,R,TB,TE)").hasSolution();
+                } catch (PrologException e){
+                    System.out.println("WARNING - could not check " + s + " as there is no access request");
                     continue;
                 }
-                else{
-                    loadResource("/RGPD/right_access.pl");
-                }
+
+                loadResource("/RGPD/right_access.pl");
+
+                Query q = new Query(s);
+                q.allSolutions();
+
             } else if (s.startsWith("eraseCompliant")) {
-                if (process.isEmpty()){
+                try{
+                    new Query("used(P,A,R,T)").hasSolution();
+                } catch (PrologException e){
                     System.out.println("WARNING - could not check " + s + " as there is no erase request (no process in provenance graph)");
                     continue;
                 }
-                else{
-                    loadResource("/RGPD/erase_compliant.pl");
-                }
-            } else if (s.startsWith("storageLimitation")) {
-                if (process.isEmpty()){
-                    if (personalData.isEmpty()){
-                        System.out.println("WARNING - could not check " + s + " as there is no personal data in provenance graph");
-                        continue;
-                    } else {
-                        loadResource("/RGPD/storage_limitation_no_use.pl");
-                    }
-                } else {
-                    loadResource("/RGPD/storage_limitation.pl");
-                }
-            }
+                loadResource("/RGPD/erase_compliant.pl");
 
-            Query q = new Query(s);
-            q.allSolutions();
+                Query q = new Query(s);
+                q.allSolutions();
+
+            } else if (s.startsWith("storageLimitation")) {
+                try{
+                    new Query("used(P,A,R,T)").hasSolution();
+                }
+                catch (PrologException e){
+                    System.out.println("WARNING - could not check " + s + " as no personal data was used");
+                    continue;
+                }
+                loadResource("/RGPD/storage_limitation.pl");
+                Query q = new Query(s);
+                q.allSolutions();
+
+            }/*
+            System.setOut(old);
+            System.out.println(s);*/
+
 
 
         }
@@ -355,7 +372,7 @@ public class Solver {
         src.main.java.Solver s2 = new src.main.java.Solver("src.main.java.Solver/testfiles/SN_prov_graph_pb.pl",queries, 61983,43200,57600,30000);
         s2.solve();*/
 
-        Solver s = new Solver("Solver/testfiles/consent_compliant.pl","Solver/testfiles/time_default.pl",queries);
-        s.solve();
+        Solver s = new Solver("/home/pauline/IdeaProjects/TER-M1-2024/src/main/java/Solver/testfiles/access/noncompliant_twoAskDataAccess.pl","/home/pauline/IdeaProjects/TER-M1-2024/src/main/java/Solver/testfiles/access/time_access_test.pl",queries);
+        System.out.println(s.solve());
     }
 }

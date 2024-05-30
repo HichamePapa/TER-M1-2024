@@ -9,7 +9,7 @@ rightAccessOk(P,A,TE):-
 	(wasControlledBy(P2,_S2,'owner',_TB2,TE2),used(P2,A,_R,_T),action(P2,'sendData'),(tLimit('access',TLIMITACCESS),(TE2-TE)<TLIMITACCESS), !).
 
 rightAccess(S):-
-    wasControlledBy(P,S,'owner',_TB,TE), wasGeneratedBy(A,P,_R,_T), action(P,'askDataAccess'),
+    wasControlledBy(P,S,'owner',_TB,TE), wasGeneratedBy(A,P,_R,TE), action(P,'askDataAccess'),
     (rightAccessOk(P,A,TE);
     		(\+ rightAccessOk(P,A,TE), writeRightAccessNotCompliant(S,TE)));
-    	(\+ (wasControlledBy(P,S,'owner',_TB,_TE),action(P,'askDataAccess')), writeNoAccessAsked()).
+    (\+ (wasControlledBy(P,S,'owner',_TB,_TE),wasGeneratedBy(A,P,_R,_T),action(P,'askDataAccess')), writeNoAccessAsked()).
