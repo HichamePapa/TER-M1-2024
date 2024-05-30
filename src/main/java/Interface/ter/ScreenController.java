@@ -228,6 +228,8 @@ public class ScreenController {
             activate("resultsScreen");
 
         });
+        Text precision = new Text("NOTE: Ne rien sélectionner dans une catégorie revient à tester tous ses éléments");
+
 
         Button returnBtn = new Button("Retour");
         returnBtn.setOnAction(e -> {
@@ -240,7 +242,7 @@ public class ScreenController {
         VBox choiceScreenScrollable = new VBox(10);
         choiceScreenScrollable.setPadding(new Insets(20, 20, 20, 20));
 
-        choiceScreenScrollable.getChildren().addAll(choiceScreen,scroll,submitButton,returnBtn);
+        choiceScreenScrollable.getChildren().addAll(choiceScreen,scroll,submitButton,precision,returnBtn);
 
         screenMap.put("choiceScreen",choiceScreenScrollable);
 

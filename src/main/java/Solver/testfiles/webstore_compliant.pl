@@ -10,11 +10,11 @@ wasGeneratedBy('id_David_1', 'createAccount', 'personal data', 7 ).
 wasControlledBy('consent','David', 'owner', 8, 9).
 wasGeneratedBy('consent_David_1', 'consent', 'consent', 9).
 
-purposes('consent_David_1','bankAccount_David_1',['buyItem','askRefund','refund']).
+purposes(_,'bankAccount_David_1',['buyItem','askRefund','refund']).
 purposes('consent_David_1','phoneNumber_David_1',['sendAdSMS']).
-purposes('consent_David_1','mail_David_1',['sendMail','sendTicket']).
-purposes('consent_David_1','name_David_1',['buyItem']).
-purposes('consent_David_1','physicalAddress_David_1',['buyItem']).
+purposes(_,'mail_David_1',['sendMail','sendTicket']).
+purposes(_,'name_David_1',['buyItem']).
+purposes(_,'physicalAddress_David_1',['buyItem']).
 purposes('consent_David_1','id_David_1',['sendImprovementCookie','sendThirdPartiesCookie']).
 
 
@@ -30,7 +30,7 @@ wasGeneratedBy('data_request_David', 'askDataAccess', 'request', 15).
 
 
 wasControlledBy('sendData','DC', 'owner', 1064, 1069).
-used()
+used('sendData','data_request_David','data request',1065).
 wasControlledBy('sendImprovementCookie','DC', 'owner', 1065, 1068).
 wasGeneratedBy('improvement_cookie', 'sendImprovementCookie', 'cookie to send', 1066).
 used('sendImprovementCookie','id_David_1', 'user id', 1067).
@@ -68,14 +68,14 @@ wasControlledBy('delete','DC', 'owner', 2060, 2062).
 used('delete', 'phoneNumber_David_2', 'erase data', 2061).
 used('delete', 'bankAccount_David_1', 'erase data', 2062).
 
-wasControlledBy('updateConsent','David', 'owner', 29, 31).
-used('updateConsent', 'consent_David_1', 'consent', 30).
-wasGeneratedBy('consent_David_2', 'update', 'consent', 31).
+wasControlledBy('updateConsent','David', 'owner', 59, 61).
+used('updateConsent', 'consent_David_1', 'consent', 60).
+wasGeneratedBy('consent_David_2', 'updateConsent', 'consent', 61).
 
 
 purposes('consent_David_2','id_David_1',['sendAnalysisCookie','sendImprovementCookie']).
 
-wasControlledBy('sendTicket','DC', 'owner', 3000, 3009).
+wasControlledBy('sendTicket','DC', 'owner', 3000, 3008).
 wasGeneratedBy('ticketReply', 'sendTicket', 'ticket reply', 3001).
 used('sendTicket', 'mail_David_1', 'ticket reply sent', 3002).
 
@@ -91,12 +91,12 @@ used('sendTicket', 'ticketReply', 'ticket reply sent', 3008).
 wasControlledBy('sendTicket','David', 'owner', 3009, 3010).
 used('sendTicket', 'ticketReply', 'ticket reply received', 3010).
 
-notAvailable('bankAccount_David_1',4000).
-notAvailable('phoneNumber_David_1',4000).
-notAvailable('mail_David_1',4000).
-notAvailable('name_David_1',4000).
-notAvailable('physicalAddress_David_1',4000).
-notAvailable('id_David_1',4000).
+wasControlledBy('delete','DC', 'owner', 4000, 4004).
+used('delete', 'mail_David_1', 'erase data', 4001).
+used('delete', 'name_David_1', 'erase data', 4002).
+used('delete', 'physicalAddress_David_1', 'erase data', 4003).
+used('delete', 'id_David_1', 'erase data', 4004).
+
 
 action('sendData', 'sendData').
 action('sendThirdPartiesCookie', 'sendThirdPartiesCookie').
@@ -106,7 +106,6 @@ action('sendMail', 'sendMail').
 action('sendImprovementCookie', 'sendImprovementCookie').
 action('createAccount', 'createAccount').
 action('consent', 'consent').
-action('login', 'login').
 action('buyItem', 'buyItem').
 action('delete', 'delete').
 action('askDataAccess', 'askDataAccess').
@@ -118,4 +117,4 @@ action('providePolicy', 'providePolicy').
 action('askErase', 'askErase').
 action('updateConsent', 'updateConsent').
 action('refund', 'refund').
-purposes(_,_,['consent','delete','askErase','sendData','askDataAccess','updateConsent','accessWebPage','updateData','createAccount','login']).
+purposes(_,_,['consent','delete','askErase','sendData','askDataAccess','updateConsent','updateData','createAccount']).
