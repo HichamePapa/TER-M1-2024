@@ -22,7 +22,7 @@ used('sendAdSMS','phoneNumber_David_1','user phone number', 34).
 used('sendAdSMS','ad','ad sms', 35).
 
 wasControlledBy('revokeConsent','David','owner',45, 46).
-used('revokeConsent','consent_David_1','revokeConsent', 46).
+used('revokeConsent','consent_David_2','revokeConsent', 46).
 
 wasControlledBy('sendAdSMS','DC','owner', 52, 55).
 wasGeneratedBy('ad','sendAdSMS','ad to send', 53).
