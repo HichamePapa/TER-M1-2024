@@ -306,7 +306,7 @@ public class Solver {
                     Query q = new Query(s);
                     q.allSolutions();
                 } catch (PrologException e){
-                    System.out.println("consent not compliant as no consent was given");
+                    System.out.println("CONSENT ISSUE - consent not compliant as no consent was given");
                     continue;
                 }
 

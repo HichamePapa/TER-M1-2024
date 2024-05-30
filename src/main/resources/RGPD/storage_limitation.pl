@@ -1,4 +1,4 @@
-writeStorageLimitationNotCompliant(D,TU):- write('storage limitation not compliant : data '), write(D), write(' was last used at '), write(TU), writeln(' and not deleted in time'), false.
+writeStorageLimitationNotCompliant(D,TU):- write('STORAGE LIMITATION ISSUE - data '), write(D), write(' was last used at '), write(TU), writeln(' and not deleted in time'), false.
 
 storageLimitationOk(D,TU):-
 	(tCurrent(TCURRENT),tLimit('storage',TLIMITSTORAGE),(TCURRENT-TU)<TLIMITSTORAGE, !);

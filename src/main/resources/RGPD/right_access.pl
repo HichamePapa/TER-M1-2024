@@ -1,6 +1,6 @@
 %	right access compliance
-writeRightAccessNotCompliant(S,TE):- write('right access not compliant : subject '), write(S), write(' asked for access at time '), write(TE), writeln(' and was not sent data in time'), false.
-writeNoAccessAsked():- writeln('system compliant on right access as no asked was asked').
+writeRightAccessNotCompliant(S,TE):- write('ACCESS REQUEST ISSUE - subject '), write(S), write(' asked for access at time '), write(TE), writeln(' and was not sent data in time'), false.
+writeNoAccessAsked():- writeln('ACCESS REQUEST OK - system compliant on right access as no asked was asked').
 
 accessTimeLimitNotOver(_P,T):- (tCurrent(TCURRENT),tLimit('access',TLIMITACCESS),(TCURRENT-T)<TLIMITACCESS).
 
