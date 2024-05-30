@@ -29,7 +29,7 @@ wasControlledBy('askDataAccess','Bob','owner', 24, 25).
 wasGeneratedBy('data_request_Bob','askDataAccess','request', 25).
 
 wasControlledBy('sendData','DC','owner', 1064, 1066).
-used('sendData','data_request_Bob', 'data request received',1065)
+used('sendData','data_request_Bob', 'data request received',1065).
 wasGeneratedBy('data_report_Bob','sendData','data response', 1066).
 
 
