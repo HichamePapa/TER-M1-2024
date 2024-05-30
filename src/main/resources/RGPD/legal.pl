@@ -7,11 +7,9 @@ revoke(C,T):- used(_P,C,'revokeConsent',T).
 nextConsent(C,C1,T):- wasControlledBy(P1,_S,'owner',_TB,_TE), used(P1,C,'consent',_TU), wasGeneratedBy(C1,P1,'consent',T).
 lastConsent(C):- consent(C,_D,_P1,_T),\+ (nextConsent(C,_C1,_TU)).
 
-
-%   lawfulness
-writeConsentNotFound(P,D,PU,T):- write(user_output,'consent not compliant : process '), write(P), write(' used '), write(D), write(' for purpose '), write(PU), write(' at time '), write(T), writeln(' without consent'), false.
-writeNoDataUsed():- writeln('LAWFULNESS OK - lawful system as there is no use of any personal data').
-
+%	lawfulness
+writeConsentNotFound(P,D,PU,T):- write('CONSENT ISSUE - process '), write(P), write(' used '), write(D), write(' for purpose '), write(PU), write(' at time '), write(T), writeln(' without consent'), false.
+writeNoDataUsed():- writeln('CONSENT OK - lawful system as there is no use of any personal data').
 
 consentFoundOk(D,PU,T):-
    (consent(C,D,PU,TG),TG<T,
