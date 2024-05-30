@@ -7,7 +7,7 @@ nextConsent(C,C1,T):- wasControlledBy(P1,_S,'owner',_TB,_TE), used(P1,C,'updateC
 lastConsent(C):- consent(C,_D,_P1,_T),\+ (nextConsent(C,_C1,_TU)).
 
 %	lawfulness
-writeConsentNotFound(P,D,PU,T):- write(user_output,'CONSENT ISSUE - process '), write(P), write(' used '), write(D), write(' for purpose '), write(PU), write(' at time '), write(T), writeln(' without consent'), false.
+writeConsentNotFound(P,D,PU,T):- write('CONSENT ISSUE - process '), write(P), write(' used '), write(D), write(' for purpose '), write(PU), write(' at time '), write(T), writeln(' without consent'), false.
 writeNoDataUsed():- writeln('CONSENT OK - lawful system as there is no use of any personal data').
 
 consentFoundOk(D,PU,T):-

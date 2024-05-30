@@ -26,7 +26,7 @@ public class ScreenController {
 
     public void init() throws IOException {
         initGraphPathScreen();
-        // initTimesScreen();
+        initTimesHelpScreen();
     }
     public void setMainScene(Scene scene){
         main = scene;
@@ -98,7 +98,12 @@ public class ScreenController {
         }
 
         timeFilePathField.setPromptText("Chemin du fichier");
-        choiceScreen.getChildren().addAll(timeFileLabel, timeFilePathField);
+
+        Button redirectToHelp = new Button("Aide");
+        redirectToHelp.setOnAction(e -> {
+            activate("timesHelpScreen");
+        });
+        choiceScreen.getChildren().addAll(timeFileLabel, timeFilePathField, redirectToHelp);
 
         Parser parser = new Parser(graph);
 
@@ -241,53 +246,24 @@ public class ScreenController {
 
     }
 
-    public void initTimesScreen(){
-        VBox timesScreen = new VBox(10);
-        timesScreen.setPadding(new Insets(20, 20, 20, 20));
+    public void initTimesHelpScreen(){
+        VBox timesHelpScreen = new VBox(10);
+        timesHelpScreen.setPadding(new Insets(20, 20, 20, 20));
 
+        Text helpText = new Text("Le fichier de données de temps contient les temps limites et le temps de vérification.\n Ce fichier est au format suivant :");
+        Text format = new Text("tCurrent(<Time>).\n" +
+                "tLimit('access',<Time>).\n" +
+                "tLimit('erase',<Time>).\n" +
+                "tLimit('storage',<Time>).");
 
-        Label currentTimeLabel = new Label("Temps de la vérification:");
-        TextField currentTimeField = new TextField();
+        Button returnButton = new Button("Retour");
+        returnButton.setOnAction(e -> {
 
-        Label timeLimitAccessLabel = new Label("Délai maximum d'accès:");
-        TextField timeAccessField = new TextField();
-
-        Label timeLimitEraseLabel = new Label("Délai maximum de suppression:");
-        TextField timeEraseField = new TextField();
-
-        Label timeLimitStorageLabel = new Label("Délai maximum de stockage:");
-        TextField timeStorageField = new TextField();
-
-
-        Button submitTimes = new Button("OK");
-        submitTimes.setOnAction(event -> {
-            Solver solver = new Solver();
-            /*int value = Integer.parseInt(currentTimeField.getText());
-            solver.setCurrentTime(value);
-            value = Integer.parseInt(timeAccessField.getText());
-            solver.setAccessTimeLimit(value);
-            value = Integer.parseInt(timeEraseField.getText());
-            solver.setEraseTimeLimit(value);
-            value = Integer.parseInt(timeStorageField.getText());
-            solver.setStorageTimeLimit(value);*/
-            try {
-                solver.setTimeFilePath(timeFile.getAbsolutePath());
-            } catch (IOException e) {
-                throw new RuntimeException("Erreur d'ouverture du fichier de données de temps");
-            }
-
-            solveController.setSolver(solver);
-            try {
-                initResultsScreen();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            activate("resultsScreen");
-
+            activate("choiceScreen");
         });
 
-        timesScreen.getChildren().addAll(currentTimeLabel,currentTimeField, timeLimitAccessLabel,timeAccessField,timeLimitEraseLabel,timeEraseField,timeLimitStorageLabel,timeStorageField,submitTimes);
-        screenMap.put("timesScreen",timesScreen);
+        timesHelpScreen.getChildren().addAll(helpText,format,returnButton);
+        screenMap.put("timesHelpScreen",timesHelpScreen);
 
     }
 
