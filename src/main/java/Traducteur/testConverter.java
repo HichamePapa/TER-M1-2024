@@ -1,5 +1,7 @@
 package Traducteur;
 
+import org.junit.Test;
+import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +12,7 @@ public class testConverter {
     List<String> listUsers = new ArrayList<>();
     List<String> listProcess = new ArrayList<>();
     List<String> listQuerries;
-/*
+
 
     @Test
     public void testNullQuery(){
@@ -100,6 +102,6 @@ public class testConverter {
 
     }
 
-   */
+
 
 }
